@@ -37,7 +37,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-<<<<<<< HEAD
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
@@ -45,11 +44,6 @@ app.use('/article', articleRouter);
 app.use('/channel', channelRouter);
 app.use('/member', memberRouter);
 app.use('/message', messageRouter);
-=======
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/api/channel", channelAPIRouter);
->>>>>>> 17712ceb58971181f8cdd3e6e8e03638e4232c47
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
