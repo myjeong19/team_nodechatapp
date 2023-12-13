@@ -12,8 +12,6 @@ const memberRouter = require('./routes/member');
 const messageRouter = require('./routes/message');
 const articleRouter = require('./routes/article');
 
-const app = express();
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
