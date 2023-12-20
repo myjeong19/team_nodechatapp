@@ -1,18 +1,26 @@
-<!DOCTYPE html>
-
-<html>
-    <head>
-        <title>암호찾기</title>
-    </head>
-
-    <body>
-        <h1>비밀번호를 잊어버리셨나요?</h1>
-        <!-- action: 사용자 정보를 어디로 보낼지에 대한 주소 경로 -->
-        <form action="/find" method="post">
-            메일주소: <input type="text" name="email" id="email"><br/>
-            이름: <input type="text" name="name" id="name"><br/>
-            전화번호: <input type="text" name="phone" id="phone"><br/>
-            <input type="submit" value="비밀번호 찾기">
-        </form>
-    </body>
-</html>
+<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+  <div class="login-wrapper">
+    <form action="/find" method="post">
+      <div class="login-screen">
+        <div class="login-body pb-4">
+          <a href="/find" class="login-logo">
+            <img src="img/logo.svg" alt="Quick Chat" />
+          </a>
+          <h6>
+            In order to access your account, please enter the email id you
+            provided during the registration process.
+          </h6>
+          <div class="field-wrapper mb-3">
+            <input type="email" autofocus />
+            <div class="field-placeholder">Email ID</div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn btn-primary ml-auto">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
