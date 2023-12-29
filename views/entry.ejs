@@ -8,16 +8,62 @@
           </a>
           <h6>Welcome to Quick Chat App,<br />Create your account.</h6>
           <div class="field-wrapper">
-            <input type="email" autofocus />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              autofocus
+              required
+              maxlength="100"
+            />
             <div class="field-placeholder">Email ID</div>
           </div>
           <div class="field-wrapper">
-            <input type="password" />
+            <input
+              type="password"
+              id="member_password"
+              name="member_password"
+              required
+              maxlength="100"
+            />
             <div class="field-placeholder">Password</div>
           </div>
           <div class="field-wrapper mb-3">
-            <input type="password" />
+            <input
+              type="password"
+              id="confirm_member_password"
+              name="confirm_member_password"
+              required
+              maxlength="100"
+            />
             <div class="field-placeholder">Confirm Password</div>
+          </div>
+          <div class="field-wrapper">
+            <input
+              type="telephone"
+              id="telephone"
+              name="telephone"
+              required
+              maxlength="20"
+            />
+            <div class="field-placeholder">Telephone</div>
+          </div>
+          <div class="field-wrapper">
+            <input type="date" id="birth_date" name="birth_date" />
+            <div class="field-placeholder">BirthDate</div>
+          </div>
+          <div class="field-wrapper">
+            <select
+              name="entry_type_code"
+              id="entry_type_code"
+              class="form-control"
+            >
+              <option value="1">📱SNS</option>
+              <option value="2">🌐인터넷검색</option>
+              <option value="3">🆕뉴스</option>
+              <option value="4">🎢커뮤니티</option>
+            </select>
+            <div class="field-placeholder">EntryType</div>
           </div>
           <div class="actions">
             <button type="submit" class="btn btn-primary ml-auto">
@@ -35,18 +81,4 @@
     </form>
   </div>
 </div>
-<script>
-  alert("entry valid test");
-  $("#entryForm").submit(function () {
-    console.log("t");
-    alert("hi2");
-
-    if ($("#email").val() === "") {
-      console.log("tt");
-      alert("메일주소 입력해라");
-      alert("hi3");
-
-      return false;
-    }
-  });
-</script>
+<script></script>
