@@ -17,7 +17,9 @@
           </div>
           <div class="actions">
             <a href="/find">Forgot password?</a>
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-primary" id="button-login">
+              Login
+            </button>
           </div>
         </div>
         <div class="login-footer">
@@ -30,3 +32,27 @@
     </form>
   </div>
 </div>
+
+<script>
+  const buttonLogin = document.getElementById('button-login');
+  const handleValidation = e => {
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+
+    if (email.value === '') {
+      e.preventDefault();
+      email.focus();
+      alert('이메일을 입력해주세요.');
+      return false;
+    }
+
+    if (password.value === '') {
+      e.preventDefault();
+      password.focus();
+      alert('비밀번호를 입력해주세요.');
+      return false;
+    }
+  };
+
+  buttonLogin.addEventListener('click', handleValidation);
+</script>
