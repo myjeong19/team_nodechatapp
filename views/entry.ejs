@@ -8,7 +8,14 @@
           </a>
           <h6>Welcome to Quick Chat App,<br />Create your account.</h6>
           <div class="field-wrapper">
-            <input type="email" id="email" name="email" autofocus />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              autofocus
+              required
+              maxlength="100"
+            />
             <div class="field-placeholder">Email ID</div>
           </div>
           <div class="field-wrapper">
@@ -16,6 +23,8 @@
               type="password"
               id="member_password"
               name="member_password"
+              required
+              maxlength="100"
             />
             <div class="field-placeholder">Password</div>
           </div>
@@ -24,8 +33,37 @@
               type="password"
               id="confirm_member_password"
               name="confirm_member_password"
+              required
+              maxlength="100"
             />
             <div class="field-placeholder">Confirm Password</div>
+          </div>
+          <div class="field-wrapper">
+            <input
+              type="telephone"
+              id="telephone"
+              name="telephone"
+              required
+              maxlength="20"
+            />
+            <div class="field-placeholder">Telephone</div>
+          </div>
+          <div class="field-wrapper">
+            <input type="date" id="birth_date" name="birth_date" />
+            <div class="field-placeholder">BirthDate</div>
+          </div>
+          <div class="field-wrapper">
+            <select
+              name="entry_type_code"
+              id="entry_type_code"
+              class="form-control"
+            >
+              <option value="1">SNS</option>
+              <option value="2">인터넷검색</option>
+              <option value="3">뉴스</option>
+              <option value="4">커뮤니티</option>
+            </select>
+            <div class="field-placeholder">EntryType</div>
           </div>
           <div class="actions">
             <button type="submit" class="btn btn-primary ml-auto">
@@ -43,40 +81,4 @@
     </form>
   </div>
 </div>
-<script>
-  $("#entryForm").submit(function () {
-    var email = $("#email").val();
-    var member_password = $("#member_password").val();
-    var confirm_member_password = $("#confirm_member_password").val();
-
-    if (email === "") {
-      alert("메일주소 입력해라");
-      return false;
-    }
-    if (email.length > 100) {
-      alert("메일주소는 100글자 미만");
-      return false;
-    }
-    if (member_password === "") {
-      alert("비밀번호 입력해라");
-      return false;
-    }
-    if (member_password.length > 100) {
-      //암호화해서 500글자니까...어느정도로 잡아야 할 지 정확히는 모르겠음
-      alert("비밀번호는 100글자 미만");
-      return false;
-    }
-    if (confirm_member_password === "") {
-      alert("확인 비밀번호를 입력해라");
-      return false;
-    }
-    if (confirm_member_password > 100) {
-      alert("확인 비밀번호는 100글자 미만");
-      return false;
-    }
-    if (member_password !== confirm_member_password) {
-      alert("비밀번호가 서로 다른 값임.");
-      return false;
-    }
-  });
-</script>
+<script></script>
