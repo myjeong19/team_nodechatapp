@@ -8,15 +8,23 @@
           </a>
           <h6>Welcome to Quick Chat App,<br />Create your account.</h6>
           <div class="field-wrapper">
-            <input type="email" autofocus />
+            <input type="email" id="email" name="email" autofocus />
             <div class="field-placeholder">Email ID</div>
           </div>
           <div class="field-wrapper">
-            <input type="password" />
+            <input
+              type="password"
+              id="member_password"
+              name="member_password"
+            />
             <div class="field-placeholder">Password</div>
           </div>
           <div class="field-wrapper mb-3">
-            <input type="password" />
+            <input
+              type="password"
+              id="confirm_member_password"
+              name="confirm_member_password"
+            />
             <div class="field-placeholder">Confirm Password</div>
           </div>
           <div class="actions">
@@ -36,16 +44,21 @@
   </div>
 </div>
 <script>
-  alert("entry valid test");
   $("#entryForm").submit(function () {
-    console.log("t");
-    alert("hi2");
-
     if ($("#email").val() === "") {
-      console.log("tt");
       alert("메일주소 입력해라");
-      alert("hi3");
-
+      return false;
+    }
+    if ($("#member_password").val() === "") {
+      alert("비밀번호 입력해라");
+      return false;
+    }
+    if ($("#confirm_member_password").val() === "") {
+      alert("비밀번호 확인을 입력해라");
+      return false;
+    }
+    if ($("#member_password").val() !== $("#confirm_member_password").val()) {
+      alert("비밀번호가 틀린데?");
       return false;
     }
   });
