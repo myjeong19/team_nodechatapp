@@ -5,6 +5,8 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const layout = require("express-ejs-layouts");
 
+var sequelize = require('./models/index.js').sequelize;
+
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var channelRouter = require("./routes/channel");
@@ -12,6 +14,8 @@ var channelAPIRouter = require("./routes/channelAPI");
 var memberAPIRouter = require("./routes/memberAPI");
 
 var app = express();
+
+sequelize.sync();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
