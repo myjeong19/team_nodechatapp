@@ -45,20 +45,37 @@
 </div>
 <script>
   $("#entryForm").submit(function () {
-    if ($("#email").val() === "") {
+    var email = $("#email").val();
+    var member_password = $("#member_password").val();
+    var confirm_member_password = $("#confirm_member_password").val();
+
+    if (email === "") {
       alert("메일주소 입력해라");
       return false;
     }
-    if ($("#member_password").val() === "") {
+    if (email.length > 100) {
+      alert("메일주소는 100글자 미만");
+      return false;
+    }
+    if (member_password === "") {
       alert("비밀번호 입력해라");
       return false;
     }
-    if ($("#confirm_member_password").val() === "") {
-      alert("비밀번호 확인을 입력해라");
+    if (member_password.length > 100) {
+      //암호화해서 500글자니까...어느정도로 잡아야 할 지 정확히는 모르겠음
+      alert("비밀번호는 100글자 미만");
       return false;
     }
-    if ($("#member_password").val() !== $("#confirm_member_password").val()) {
-      alert("비밀번호가 틀린데?");
+    if (confirm_member_password === "") {
+      alert("확인 비밀번호를 입력해라");
+      return false;
+    }
+    if (confirm_member_password > 100) {
+      alert("확인 비밀번호는 100글자 미만");
+      return false;
+    }
+    if (member_password !== confirm_member_password) {
+      alert("비밀번호가 서로 다른 값임.");
       return false;
     }
   });
