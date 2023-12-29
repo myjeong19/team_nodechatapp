@@ -1,4 +1,4 @@
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 
 /* GET home page. */
@@ -7,10 +7,10 @@ var channel_list = [
     channel_id: 1,
     community_id: 110011,
     category_code: 1021,
-    channel_name: "채널1",
+    channel_name: '채널1',
     user_limit: 100,
-    channel_img_path: "채널1이미지",
-    channel_desc: "채널1설명",
+    channel_img_path: '채널1이미지',
+    channel_desc: '채널1설명',
     channel_state_code: 1,
     reg_date: Date.now(),
     reg_member_id: 881,
@@ -21,10 +21,10 @@ var channel_list = [
     channel_id: 2,
     community_id: 220022,
     category_code: 1022,
-    channel_name: "채널2",
+    channel_name: '채널2',
     user_limit: 200,
-    channel_img_path: "채널2이미지",
-    channel_desc: "채널2설명",
+    channel_img_path: '채널2이미지',
+    channel_desc: '채널2설명',
     channel_state_code: 0,
     reg_date: Date.now(),
     reg_member_id: 882,
@@ -35,10 +35,10 @@ var channel_list = [
     channel_id: 3,
     community_id: 330033,
     category_code: 1023,
-    channel_name: "채널3",
+    channel_name: '채널3',
     user_limit: 300,
-    channel_img_path: "채널3이미지",
-    channel_desc: "채널3설명",
+    channel_img_path: '채널3이미지',
+    channel_desc: '채널3설명',
     channel_state_code: 1,
     reg_date: Date.now(),
     reg_member_id: 883,
@@ -49,29 +49,24 @@ var channel_list = [
 var apiResult = {
   code: 200,
   data: [],
-  result: "OK"
-}
+  result: 'OK',
+};
 
-router.get("/all", async (req, res, next) => {
+router.get('/all', async (req, res, next) => {
   try {
-
     apiResult.code = 200;
     apiResult.data = channel_list;
-    apiResult.result = "OK";
-
+    apiResult.result = 'OK';
   } catch (err) {
-
     apiResult.code = 500;
     apiResult.data = null;
-    apiResult.result = "Failed";
+    apiResult.result = 'Failed';
   }
 
   res.json(apiResult);
-
 });
 
-router.post("/create", async (req, res, next) => {
-
+router.post('/create', async (req, res, next) => {
   try {
     var channel_id = req.body.channel_id;
     var community_id = req.body.community_id;
@@ -104,10 +99,10 @@ router.post("/create", async (req, res, next) => {
       channel_id: 1,
       community_id: 110011,
       category_code: 1021,
-      channel_name: "채널1",
+      channel_name: '채널1',
       user_limit: 100,
-      channel_img_path: "채널1이미지",
-      channel_desc: "채널1설명",
+      channel_img_path: '채널1이미지',
+      channel_desc: '채널1설명',
       channel_state_code: 1,
       reg_date: Date.now(),
       reg_member_id: 881,
@@ -117,20 +112,17 @@ router.post("/create", async (req, res, next) => {
 
     apiResult.code = 200;
     apiResult.data = savedChannel;
-    apiResult.result = "OK";
-
+    apiResult.result = 'OK';
   } catch (err) {
-
     apiResult.code = 500;
     apiResult.data = null;
-    apiResult.result = "Failed";
+    apiResult.result = 'Failed';
   }
 
   res.json(apiResult);
-
 });
 
-router.post("/modify", async (req, res, next) => {
+router.post('/modify', async (req, res, next) => {
   try {
     var channel_id = req.body.channel_id;
     var community_id = req.body.community_id;
@@ -163,19 +155,17 @@ router.post("/modify", async (req, res, next) => {
 
     apiResult.code = 200;
     apiResult.data = affectedCnt;
-    apiResult.result = "OK";
-
+    apiResult.result = 'OK';
   } catch (err) {
-
     apiResult.code = 500;
     apiResult.data = null;
-    apiResult.result = "Failed";
+    apiResult.result = 'Failed';
   }
 
   res.json(apiResult);
 });
 
-router.post("/delete", async (req, res, next) => {
+router.post('/delete', async (req, res, next) => {
   try {
     var channel_id = req.body.channel_id;
     //삭제
@@ -184,32 +174,30 @@ router.post("/delete", async (req, res, next) => {
 
     apiResult.code = 200;
     apiResult.data = affectedCnt;
-    apiResult.result = "OK";
-
+    apiResult.result = 'OK';
   } catch (err) {
-
     apiResult.code = 500;
     apiResult.data = null;
-    apiResult.result = "Failed";
+    apiResult.result = 'Failed';
   }
 
   res.json(apiResult);
 });
 
-router.get("/:cid", async (req, res, next) => {
+router.get('/:cid', async (req, res, next) => {
   try {
     var cid = req.params.cid;
     // console.log("cid : " + cid);
-    
-    //임시 Data 
+
+    //임시 Data
     var savedChannel = {
       channel_id: 3,
       community_id: 330033,
       category_code: 1023,
-      channel_name: "채널3",
+      channel_name: '채널3',
       user_limit: 300,
-      channel_img_path: "채널3이미지",
-      channel_desc: "채널3설명",
+      channel_img_path: '채널3이미지',
+      channel_desc: '채널3설명',
       channel_state_code: 1,
       reg_date: Date.now(),
       reg_member_id: 883,
@@ -219,15 +207,13 @@ router.get("/:cid", async (req, res, next) => {
 
     apiResult.code = 200;
     apiResult.data = savedChannel;
-    apiResult.result = "OK";
-
+    apiResult.result = 'OK';
   } catch (err) {
-
     apiResult.code = 500;
     apiResult.data = null;
-    apiResult.result = "Failed";
+    apiResult.result = 'Failed';
   }
-  
+
   res.json(apiResult);
 });
 
