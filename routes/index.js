@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
-
+var db = require("../models/index");
+var Op = db.Sequelize.Op;
 /* GET home page. */
 router.get("/", async (req, res) => res.render("login", { layout: true }));
 router.get("/login", async (req, res) => res.render("login", { layout: true }));
