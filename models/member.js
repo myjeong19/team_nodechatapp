@@ -45,7 +45,7 @@ module.exports = function (sequelize, DataTypes) {
                 comment: '가입상태코드',
             },
             birth_date: {
-                type: DataTypes.STRING(6),
+                type: DataTypes.STRING(20),
                 allowNull: false,
                 comment: '생년월일',
             },

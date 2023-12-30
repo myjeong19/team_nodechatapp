@@ -15,6 +15,7 @@
             <input type="password" name="password" id="password" />
             <div class="field-placeholder">Password</div>
           </div>
+          <p id="message"></p>
           <div class="actions">
             <a href="/find">Forgot password?</a>
             <button type="submit" class="btn btn-primary" id="button-login">
@@ -39,6 +40,7 @@
     const email = document.getElementById('email');
     const password = document.getElementById('password');
 
+
     if (email.value === '') {
       e.preventDefault();
       email.focus();
@@ -54,5 +56,14 @@
     }
   };
 
+
+  var result = "<%=resultMsg%>";
+    
+    if(result != ''){
+      document.getElementById('message').innerText = result;
+    }
+
+
   buttonLogin.addEventListener('click', handleValidation);
+
 </script>
