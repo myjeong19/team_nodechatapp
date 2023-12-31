@@ -10,24 +10,40 @@ var Op = db.Sequelize.Op;
 
 // router.get("/login", async (req, res) => res.render("login", { layout: true }));
 
-router.get("/", async (req, res) => res.render("login", { layout: true }));
+router.get("/", async (req, res) => res.render("login", { resultMsg:'',email:'',password:'',layout: true }));
 
-router.get("/index", async (req, res, next) => {
-  res.render("index", { title: "login", layout: false });
-});
+// router.get("/index", async (req, res, next) => {
+//   res.render("index", { title: "login", layout: false });
+// });
 
 router.post("/", async (req, res, next) => {
   let email = req.body.email;
   let password = req.body.password;
 
-  var member = await db.Member.findOne({where:{email,password}});
+  let member = await db.Member.findOne({where:{email}});
 
-  // 로그인 구현 해야함
+  //로그인 로직 구현
+  resultMsg = '';
+
+  if(member == null){
+    resultMsg = "이메일이 일치하지 않습니다."
+  }else{
+
+    if(member.member_password == password){
+      res.redirect('/chat');
+    }else{
+      resultMsg = "비밀번호가 일치하지 않습니다.";
+    }
+  }
+
+
+  if(resultMsg != ''){
+    res.render('login',{resultMsg,email,password});
+  }
 
   
-  console.log(`find /!! email : ${email}   password : ${password}`);
+  // console.log(`find /!! email : ${email}   password : ${password}`);
 
-  res.redirect("/index");
 });
 
 
@@ -41,26 +57,30 @@ router.get("/entry", async (req, res, next) => {
 
 router.post("/entry", async (req, res, next) => {
   let email = req.body.email;
-  let member_password = req.body.password;
-  let name = req.body.name;
+  let member_password = req.body.member_password;
+  let confirm_member_password = req.body.confirm_member_password;
+  let telephone = req.body.telephone;
+  let birth_date = req.body.birth_date;
+  let entry_type_code = req.body.entry_type_code;
 
   // console.log(`entry post!! email : ${email}   password : ${password}`);
 
-  var member = {
+  let member = {
     email,
     member_password,
-    name,
+    confirm_member_password,
+    name:"hee",
     profile_img_path:1,
-    telephone:"010-1111-1111",
-    entry_type_code:1,
+    telephone,
+    entry_type_code,
     use_state_code:1,
-    birth_date:1,
-    reg_date:1,
+    birth_date,
+    reg_date:Date.now(),
     reg_member_id:1
   };
 
 
-  var savedMember = await db.Member.create(member);
+  let savedMember = await db.Member.create(member);
 
   res.redirect("/");
 });
@@ -71,14 +91,29 @@ router.post("/entry", async (req, res, next) => {
 
 
 router.get("/find", async (req, res, next) => {
-  res.render("find", { title: "find" });
+  res.render("find", { resultMsg:'', email:''});
 });
 
 router.post("/find", async (req, res, next) => {
-  let email = req.body.email;
-  let password = req.body.password;
-  console.log(`find post!! email : ${email}   password : ${password}`);
 
-  res.redirect("/");
+  let email = req.body.email;
+  
+  let findEmail = await db.Member.findOne({where:{email}});
+
+  resultMsg = '';
+
+  if(findEmail === null){
+    resultMsg = "존재하지 않는 이메일입니다.";
+    res.render('find',{resultMsg,email});
+  }else{
+    res.redirect("/");
+  }
+
+
+
+
+
+  // console.log(`find post!! email : ${email}   password : ${password}`);
+
 });
 module.exports = router;
