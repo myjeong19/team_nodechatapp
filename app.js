@@ -4,8 +4,10 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const layout = require("express-ejs-layouts");
+require('dotenv').config();
 
 var sequelize = require('./models/index.js').sequelize;
+const cors = require('cors');
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -24,6 +26,15 @@ app.set("layout", "layout");
 app.set("layout extractScripts", true);
 app.set("layout extractStyles", true);
 app.set("layout extractMetas", true);
+
+// cors 설정
+// app.use(cors());
+// app.use(cors({
+//   methods: ["GET", "POST", "DELETE", "OPTIONS"],
+//   origin: ["http://localhost:3000"],
+// })
+// );
+
 
 app.use(layout);
 app.use(logger("dev"));

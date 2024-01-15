@@ -1,6 +1,18 @@
 var express = require('express');
 var router = express.Router();
+var db = require('../models/index');
+var bcrypt = require('bcryptjs');
+var AES = require('mysql-aes');
+var jwt = require('jsonwebtoken');
+var multer = require('multer');
 
+//해당 객체를 frontend로 전송합니다.
+//변수명 수정하지 말고 이걸로 사용해주세요! 
+var apiResult = {
+    code: 400,
+    data: null,
+    resultMsg: ""
+  };
 
 router.get('/all',async(req,res)=>{
 
