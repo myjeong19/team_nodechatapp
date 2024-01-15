@@ -1,12 +1,15 @@
-const path = require('path');
-const Sequelize = require('sequelize');
+const path = require("path");
+const Sequelize = require("sequelize");
 
 //개발모드 환경설정
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || "development";
 
 //DB연결 환경설정정보 변경처리//관련정보 수정
 //commenet - config.js를 require하도록 수정했습니다. 충돌시 참고해주세요. 
 const config = require('../config/config.js')[env];
+//config.js모듈 파일 기반으로 DB연결정보 가져오기
+const config = require('../config/config.js')[env];
+
 
 //데이터 베이스 객체
 const db = {};
@@ -26,16 +29,17 @@ db.Sequelize = Sequelize; //Sequelize팩키지에서 제공하는 각종 데이�
 
 //회원모델 모듈파일 참조하고 db속성정의하기
 
-db.Member = require('./member.js')(sequelize, Sequelize);
+
+db.Member = require("./member.js")(sequelize, Sequelize);
 // db.Admin = require("./admin.js")(sequelize, Sequelize);
 // db.Channel = require("./channel.js")(sequelize, Sequelize);
 // db.Messages = require("./message.js")(sequelize, Sequelize);
 //db.ChannelMessage = require("./channelMessage.js")(sequelize, Sequelize);
 //db.ChannelMember = require("./channelMember.js")(sequelize, Sequelize);
-// db.Article = require("./article.js")(sequelize, Sequelize);
-// db.ArticleFile = require("./articleFile.js")(sequelize, Sequelize);
-// db.Channel = require('./channel.js')(sequelize, Sequelize);
-// db.ChannelMember = require('./channel_member.js')(sequelize, Sequelize);
+//db.Article = require("./article.js")(sequelize, Sequelize);
+db.ArticleFile = require("./articleFile.js")(sequelize, Sequelize);
+db.Channel = require('./channel.js')(sequelize, Sequelize);
+db.ChannelMember = require('./channel_member.js')(sequelize, Sequelize);
 
 //db객체 외부로 노출하기
 module.exports = db;

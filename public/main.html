@@ -1270,7 +1270,7 @@
 														</div>
 														<div class="field-wrapper">
 															<div class="custom-file">
-																<input type="file" class="custom-file-input" id="uploadProfile">
+																<input type="file" class="custom-file-input" id="uploadProfile" name="uploadProfile">
 																<label class="custom-file-label" for="uploadProfile">Choose file</label>
 															</div>
 														</div>
@@ -1935,5 +1935,32 @@
 		<!-- Main Js Required -->
 		<script src="js/main.js"></script>
 
+		<script>
+
+			//사용
+			$("#uploadProfile").change(function(){
+
+
+				var data = new FormData();
+
+				data.append("uploadProfile",$("input[name=uploadProfile]")[0].files[0]);
+
+
+				$.ajax({
+					data:data,
+					type:"POST",
+					url:"/api/common/upload",
+					cache: false,
+            		contentType: false,
+            		processData: false,
+					success:function(result){
+						console.log("파일업로드 처리결과: ",result);
+					}
+				});
+			});
+			
+		</script>
+
+		
 	</body>
 </html>
