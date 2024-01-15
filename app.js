@@ -4,9 +4,9 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const layout = require("express-ejs-layouts");
-require('dotenv').config();
+require("dotenv").config();
+var sequelize = require("./models/index.js").sequelize;
 
-var sequelize = require('./models/index.js').sequelize;
 const cors = require('cors');
 
 var indexRouter = require("./routes/index");

@@ -7,8 +7,8 @@
             <img src="img/logo.svg" alt="Quick Chat" />
           </a>
           <h6>Welcome to Quick Chat App,<br />Create your account.</h6>
+          <!--이메일-->
           <div class="field-wrapper">
-
             <input
               type="email"
               id="email"
@@ -19,6 +19,20 @@
             />
             <div class="field-placeholder">Email ID</div>
           </div>
+          <!--이름-->
+          <div class="field-wrapper">
+            <input
+              type="text"
+              id="name"
+              name="name"
+              autofocus
+              required
+              maxlength="100"
+            />
+            <div class="field-placeholder">Name</div>
+          </div>
+
+          <!--비밀번호-->
           <div class="field-wrapper">
             <input
               type="password"
@@ -29,6 +43,7 @@
             />
             <div class="field-placeholder">Password</div>
           </div>
+          <!--비번확인-->
           <div class="field-wrapper mb-3">
             <input
               type="password"
@@ -38,8 +53,8 @@
               maxlength="100"
             />
             <div class="field-placeholder">Confirm Password</div>
-
           </div>
+          <!--핸드폰-->
           <div class="field-wrapper">
             <input
               type="telephone"
@@ -50,10 +65,12 @@
             />
             <div class="field-placeholder">Telephone</div>
           </div>
+          <!--생년월일-->
           <div class="field-wrapper">
             <input type="date" id="birth_date" name="birth_date" />
             <div class="field-placeholder">BirthDate</div>
           </div>
+          <!--가입경로-->
           <div class="field-wrapper">
             <select
               name="entry_type_code"

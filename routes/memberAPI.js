@@ -1,13 +1,68 @@
-var express = require('express');
-var router = express.Router();
-var db = require('../models/index');
-var bcrypt = require('bcryptjs');
-var AES = require('mysql-aes');
-var jwt = require('jsonwebtoken');
-var multer = require('multer');
+let express = require("express");
+let router = express.Router();
+const path = require("path");
+const app = express();
+let db = require("../models/index");
+let Op = db.Sequelize.Op;
+const bcrypt = require("bcryptjs");
+const aes = require("mysql-aes");
+var jwt = require("jsonwebtoken");
+const { mergeByKey, apiResultSetFunc } = require("./utils/utiles");
+const { tokenAuthChecking } = require("./apiMiddleware");
+//login api
+//에러처리
+//1. http://localhost:3000/api/member/login/1 -> 정의되지 않은 라우터경로 처리
+//2. http://localhost:3000/api/member/login "email" : "hwoarang09@naver.com11" 이메일이 db에없는 경우
+// {
+//   "success": false,
+//   "message": "No member"
+// }
+//3. http://localhost:3000/api/member/login  email이 db에 존재하는데 password를 틀릴 경우
+// {
+//   "success": false,
+//   "message": "Password Wrong"
+// }
+router.post("/login", async (req, res, next) => {
+  let apiResult = apiResultSetFunc(200, "기본data", "기본resutl");
+
+  try {
+    let { email, member_password } = req.body;
+    console.log(email, member_password);
+    email = aes.encrypt(email, process.env.MYSQL_AES_KEY);
+    const member = await db.Member.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (!member)
+      apiResult = apiResultSetFunc(
+        400,
+        "NotExistEmail",
+        "해당 이메일의 유저가 존재하지 않습니다."
+      );
+    else {
+      let passwordResult = await bcrypt.compare(
+        member_password,
+        member.member_password
+      );
+      if (!passwordResult)
+        apiResult = apiResultSetFunc(
+          400,
+          "NotCorrectword",
+          "비밀번호가 틀렸습니다."
+        );
+      else {
+        var memberTokenData = {
+          member_id: member.member_id,
+          email: member.email,
+          name: member.name,
+          profile_img_path: member.profile_img_path,
+          telephone: member.telephone,
+        };
+
 
 //해당 객체를 frontend로 전송합니다.
-//변수명 수정하지 말고 이걸로 사용해주세요! 
 var apiResult = {
     code: 400,
     data: null,
@@ -78,235 +133,312 @@ router.get('/all',async(req,res)=>{
         apiResult.result = "ok";
 
 
-    }catch(err){
-        apiResult.code = 500;
-        apiResult.data = null;
-        apiResult.result = "failed";
+        var token = await jwt.sign(memberTokenData, process.env.JWT_SECRET, {
+          expiresIn: "24h",
+          issuer: "msoftware",
+        });
+        apiResult = apiResultSetFunc(200, token, "로그인에 성공했습니다.");
+      }
     }
+  } catch (err) {
+    console.error("Error in member POST /login:", err);
+    apiResult = apiResultSetFunc(500, null, "failed or server error!");
+  }
 
-
-
-    //JSON데이터로 반환한다
-    res.json(apiResult);
+  res.json(apiResult);
 });
 
+//entry api
+router.post("/entry", async (req, res, next) => {
+  let apiResult = apiResultSetFunc(200, "기본data", "기본resutl");
 
-
-router.post('/create',async(req,res)=>{
-
-    var apiResult = {
-        code:200,
-        data:[],
-        result:"ok"
+  console.log("entry start!!");
+  try {
+    let member = {
+      email: req.body.email,
+      member_password: req.body.member_password,
+      name: req.body.name,
+      profile_img_path: req.body.profile_img_path,
+      telephone: req.body.telephone,
+      entry_type_code: req.body.entry_type_code,
+      use_state_code: 1,
+      birth_date: req.body.birth_date,
+      reg_date: Date.now(),
+      reg_member_id: 1,
+      edit_date: Date.now(),
+      edit_member_id: 1,
     };
 
-
-    try{
-
-        //신규 사용자가 입력한 값을 추출한다
-        var email = req.body.email;
-        var member_password = req.body.member_password;
-        var name = req.body.name;
-        var profile_img_path = req.body.profile_img_path;
-        var telephone = req.body.telephone;
-        var entry_type_code = req.body.entry_type_code;
-        var birth_date = req.body.birth_date;
-
-
-        var member = {
-            member_id: 1,
-            email,
-            member_password,
-            name,
-            profile_img_path,
-            telephone,
-            entry_type_code,
-            use_state_code:1,
-            birth_date,
-            reg_date: Date.now(),
-            reg_member_id: 881,
-            edit_date: Date.now(),
-            edit_member_id: 991
-        };
-
-
-        const savedMember = {
-            member_id: 3,
-            email: 'a01022883839@gmail.ocm',
-            member_password: '맴버3비번',
-            name: '윤성삼',
-            profile_img_path: '멤버3이미지주소',
-            telephone: '01222883839',
-            entry_type_code: 0,
-            use_state_code: 0,
-            birth_date: '900313',
-            reg_date: Date.now(),
-            reg_member_id: 883,
-            edit_date: Date.now(),
-            edit_member_id: 993
-        }
-
-        apiResult.code = 200;
-        apiResult.data = savedMember;
-        apiResult.result = "ok";
-
-
-    }catch(err){
-        apiResult.code = 500;
-        apiResult.data = null;
-        apiResult.result = "failed";
+    console.log("entry  member!!", member);
+    console.log("hi");
+    member.member_password = await bcrypt.hash(member.member_password, 12);
+    console.log("hi2");
+    member.email = aes.encrypt(member.email, process.env.MYSQL_AES_KEY);
+    console.log("hi3");
+    member.telephone = aes.encrypt(member.telephone, process.env.MYSQL_AES_KEY);
+    console.log("hi4");
+    search_member = await db.Member.findOne({
+      where: {
+        email: member.email,
+      },
+    });
+    console.log("entry search_member!!", search_member);
+    if (search_member)
+      apiResult = apiResultSetFunc(
+        400,
+        "AlreadyExistEmail",
+        "해당 이메일의 유저가 이미 존재합니다."
+      );
+    else {
+      let create_result = await db.Member.create(member);
+      apiResult = apiResultSetFunc(
+        200,
+        create_result,
+        "회원가입에 성공하셨습니다."
+      );
     }
-
-
-
-    res.json(apiResult);
+  } catch (err) {
+    apiResult = apiResultSetFunc(500, null, "failed or server error! in entry");
+  }
+  res.json(apiResult);
 });
 
+//find api
+router.post("/find", async (req, res, next) => {
+  try {
+    let { email } = req.body;
+    let de_email = email;
+    email = await aes.encrypt(email, process.env.MYSQL_AES_KEY);
 
-router.post('/modify',async(req,res)=>{
+    const member = await db.Member.findOne({
+      where: {
+        email,
+      },
+    });
 
+    if (!member) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No member ...to find" });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: `${de_email}'s encrypted password is ${member.member_password}`,
+      });
+    }
+  } catch (err) {
+    console.error("Error in member POST /find:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
-    var apiResult = {
-        code:200,
-        data:[],
-        result:"ok"
+//GET /all
+//에러처리
+//1. http://localhost:3000/api/member/all/1 -> 정의되지 않은 라우터경로 처리
+router.get("/all", async (req, res, next) => {
+  try {
+    const member_list = await db.Member.findAll({});
+    res.send(member_list);
+  } catch (err) {
+    console.error("Error in member GET /all:", err);
+    res.status(500).send("error in GET all!!!");
+  }
+});
+
+//POST /create
+//에러처리
+//1. http://localhost:3000/api/member/create body에서 use_state_code="a" -> catch문
+//2. http://localhost:3000/api/member/create/1 -> 정의되지 않은 라우터경로 처리
+router.post("/create", async (req, res, next) => {
+  try {
+    let member = {
+      email: req.body.email,
+      member_password: req.body.member_password,
+      name: req.body.name,
+      profile_img_path: req.body.profile_img_path,
+      telephone: req.body.telephone,
+      entry_type_code: req.body.entry_type_code,
+      use_state_code: req.body.use_state_code,
+      birth_date: req.body.birth_date,
+      reg_date: Date.now(),
+      reg_member_id: req.body.reg_member_id,
+      edit_date: Date.now(),
+      edit_member_id: req.body.edit_member_id,
     };
 
-    try{
-
-        var member_id = req.body.member_id;
-
-        var email = req.body.email;
-        var member_password = req.body.member_password;
-        var name = req.body.name;
-        var profile_img_path = req.body.profile_img_path;
-        var telephone = req.body.telephone;
-        var entry_type_code = req.body.entry_type_code;
-        var birth_date = req.body.birth_date;
-
-        var member = {
-            member_id,
-            email,
-            member_password,
-            name,
-            profile_img_path,
-            telephone,
-            entry_type_code,
-            use_state_code:1,
-            birth_date,
-            reg_date: Date.now(),
-            reg_member_id: 881,
-            edit_date: Date.now(),
-            edit_member_id: 991
-            };
-
-            var affectedCnt = 1;
-
-            apiResult.code = 200;
-            apiResult.data = affectedCnt;
-            apiResult.result = "ok";
-
-
-    }catch(err){
-
-        apiResult.code = 500;
-        apiResult.data = 0;
-        apiResult.result = "failed";
-
-    }
-
-
-    res.json(apiResult);
+    member.member_password = await bcrypt.hash(member.member_password, 12);
+    member.email = await aes.encrypt(member.email, process.env.MYSQL_AES_KEY);
+    member.telephone = await aes.encrypt(
+      member.telephone,
+      process.env.MYSQL_AES_KEY
+    );
+    await db.Member.create(member);
+    console.log("member create : ", member);
+    res.status(200).send(member);
+  } catch (err) {
+    console.error("Error in member POST /create:", err);
+    res.status(500).send("error in POST create!!!");
+  }
 });
 
-
-
-
-
-router.post('/delete',async(req,res)=>{
-
-
-    var apiResult = {
-        code:200,
-        data:[],
-        result:"ok"
-    };
-
-
-    try{
-
-        var member_id = req.body.member_id;
-
-        var deletedCnt = 1;
-
-        apiResult.code = 200;
-        apiResult.data = deletedCnt;
-        apiResult.result = "ok";
-
-    }catch(err){
-
-        apiResult.code = 500;
-        apiResult.data = 0;
-        apiResult.result = "failed";
-
+//POST /modify
+//에러처리
+//1. http://localhost:3000/api/member/modify body에서 member_id="a" -> catch문
+//2. http://localhost:3000/api/member/modify/1 -> 정의되지 않은 라우터경로 처리
+//3. http://localhost:3000/api/member/modify에서 body에 member_id=999 -> member not found in modify 처리
+router.post("/modify", async (req, res, next) => {
+  let member_id = req.body.member_id;
+  try {
+    let member = await db.Member.findOne({
+      where: {
+        member_id,
+      },
+    });
+    if (!member) {
+      // 멤버를 찾지 못한 경우
+      return res.status(404).send("db.Member.not found in modify");
     }
-
-
-
-    res.json(apiResult);
+    let mergedObject = await mergeByKey(
+      member.toJSON(),
+      req.body,
+      ["member_password"],
+      ["email", "telephone"]
+    );
+    //console.log("member : ", member);
+    console.log("mergedObject : ", mergedObject);
+    mergedObject.edit_date = Date.now();
+    mergedObject.reg_date = Date.now();
+    await db.Member.update(mergedObject, {
+      where: {
+        member_id,
+      },
+    });
+    res.status(200).send(member);
+  } catch (err) {
+    console.error("Error in member POST /modify:", err);
+    res.status(500).send("error in POST modify!!!");
+  }
 });
 
+//POST /delete
+//에러처리
+//1. http://localhost:3000/api/member/delete  -> body에 member id="ㅁㅁ"-> catch문
+//2. http://localhost:3000/api/member/delete/1  -> 정의되지 않은 라우터 경로
+//3. http://localhost:3000/api/member/delete -> body에 member id="999"-> member not found 처리
+router.post("/delete", async (req, res, next) => {
+  try {
+    let member_id = req.body.member_id;
+    let member = await db.Member.destroy({
+      where: {
+        member_id,
+      },
+    });
 
-
-
-//   localhost:3000/api/member/1
-router.get('/:mid',async(req,res)=>{
-
-    var apiResult = {
-        code:200,
-        data:[],
-        result:"ok"
-    };
-
-
-    try{
-
-        var member_id = req.params.mid;
-
-
-        var member = {
-            member_id: 2,
-            email: 'rang0909@naver.com',
-            member_password: '맴버2비번',
-            name: '윤성일',
-            profile_img_path: '멤버2이미지주소',
-            telephone: '01122883839',
-            entry_type_code: 1,
-            use_state_code: 1,
-            birth_date: '910312',
-            reg_date: Date.now(),
-            reg_member_id: 882,
-            edit_date: Date.now(),
-            edit_member_id: 992
-        }
-
-
-        apiResult.code = 200;
-        apiResult.data = member;
-        apiResult.result = "ok";
-
-    }catch(err){
-
-        apiResult.code = 500;
-        apiResult.data = null;
-        apiResult.result = "ok";
-
+    if (!member || member.deletedCount === 0) {
+      return res.status(404).send("db.Member.not found in POST delete");
     }
-
-
-
-    res.json(apiResult);
+    //res.send(member);
+    console.log("member_id in delte ", member_id, member);
+    res.status(200).send({ member_id });
+  } catch (err) {
+    console.error("Error in member POST /delete:", err);
+    res.status(500).send("error in POST /delete!!!");
+  }
 });
 
+//GET /:mid
+//에러처리
+//1. http://localhost:3000/api/member/asd -> catch문
+//2. http://localhost:3000/api/member/ -> 정의되지 않은 라우터경로 처리
+//3. http://localhost:3000/api/member/999 -> member not found 처리
+
+//현재 로그인한 유저의 정보를 token기반으로 출력
+//로그인시 발급한 jwt토큰은 http header 영역에 포함되어 전달됨
+router.get("/profile", tokenAuthChecking, async (req, res, next) => {
+  console.log("/profile   start!!");
+  var apiResult = {
+    code: 400,
+    data: null,
+    msg: "",
+  };
+
+  try {
+    console.log("/profile   try!!");
+    //웹브라우저 헤더에서 사용자 jwt인증토큰값을 추출한다.
+    var token = req.headers.authorization.split("Bearer ")[1];
+    var tokenJsonData = await jwt.verify(token, process.env.JWT_SECRET);
+    var loginMemberId = tokenJsonData.member_id;
+    var loginMemberEmail = tokenJsonData.email;
+
+    console.log("/profile   before dbMember!!");
+    //최신의 정보를 가져오려고. 처음 로긴한 후 중간에 바꿨을 수도 있으니까.
+    var dbMember = await db.Member.findOne({
+      where: { member_id: loginMemberId },
+      attributes: [
+        "email",
+        "name",
+        "profile_img_path",
+        "telephone",
+        "birth_date",
+      ],
+    });
+
+    dbMember.telephone = aes.decrypt(
+      dbMember.telephone,
+      process.env.MYSQL_AES_KEY
+    );
+    dbMember.email = aes.decrypt(dbMember.email, process.env.MYSQL_AES_KEY);
+    apiResult.code = 200;
+    apiResult.data = dbMember;
+    apiResult.msg = "Ok";
+  } catch (err) {
+    apiResult.code = 500;
+    apiResult.data = null;
+    apiResult.msg = "Failed";
+  }
+
+  res.json(apiResult);
+});
+//아래의 에러처리 코드는 무조건 router정의가 다 끝난 최하단에 위치해야 함.
+//위에서 정의하지 않은 라우터에 대한 모든 요청에 대해서
+//Error 객체를 생성하는 아래의 미들웨어를 실행한다.
+router.get("/:mid", async (req, res, next) => {
+  try {
+    let member_id = req.params.mid;
+    const member = await db.Member.findOne({
+      where: {
+        member_id,
+      },
+    });
+    //console.log(`member_id : ${member_id}  member : ${member}`);
+    if (!member) {
+      // 멤버를 찾지 못한 경우
+      return res.status(404).send("db.Member.not found");
+    } else {
+      // 멤버를 찾은 경우
+      res.status(200).send(member);
+    }
+  } catch (err) {
+    console.error("Error in member GET /:mid", err);
+    res.status(500).send("error in GET /:mid!!! ");
+  }
+});
+
+router.use((req, res, next) => {
+  const error = new Error("정의되지 않은 라우터 경로입니다.");
+  error.status = 404;
+  next(error);
+});
+
+//위에서 받은 Error객체를 통해 화면에 처리하는 미들웨어
+router.use((err, req, res, next) => {
+  //console.log(err);
+  res.status(err.status || 500);
+  res.json({
+    error: {
+      message: err.message,
+    },
+  });
+});
 
 module.exports = router;
