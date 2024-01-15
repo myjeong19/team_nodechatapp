@@ -192,9 +192,10 @@ router.post('/login', async (req, res, next) => {
 
   try {
     const { email, password } = req.body;
+    const dbEmail = aes.encrypt(email, process.env.MYSQL_AES_KEY);
 
     //step1:로그인(인증)-동일메일주소 여부 체크
-    const member = await db.Member.findOne({ where: { email: email } });
+    const member = await db.Member.findOne({ where: { email: dbEmail } });
     var resultMsg = '';
 
     if (!member) {
@@ -210,7 +211,7 @@ router.post('/login', async (req, res, next) => {
       if (compareResult) {
         resultMsg = 'Ok';
         member.member_password = '';
-        member.telephone = AES.decrypt(
+        member.telephone = aes.decrypt(
           member.telephone,
           process.env.MYSQL_AES_KEY
         );
@@ -247,6 +248,7 @@ router.post('/login', async (req, res, next) => {
     }
   } catch (err) {
     console.log('서버에러발생-/api/member/entry:', err.message);
+    console.log(err);
     apiResult.code = 500;
     apiResult.data = null;
     apiResult.msg = 'Failed';
