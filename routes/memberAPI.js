@@ -7,11 +7,13 @@ let Op = db.Sequelize.Op;
 const bcrypt = require('bcryptjs');
 const aes = require('mysql-aes');
 var jwt = require('jsonwebtoken');
+
 const { mergeByKey, apiResultSetFunc } = require('./utils/utiles');
 const { tokenAuthChecking } = require('./apiMiddleware');
+
 //login api
 //에러처리
-//1. http://localhost:3000/api/member/login/1 -> 정의되지 않은 라우터경로 처리
+//1. http://locatlhost:3000/api/member/login/1 -> 정의되지 않은 라우터경로 처리
 //2. http://localhost:3000/api/member/login "email" : "hwoarang09@naver.com11" 이메일이 db에없는 경우
 // {
 //   "success": false,
@@ -23,84 +25,45 @@ const { tokenAuthChecking } = require('./apiMiddleware');
 //   "message": "Password Wrong"
 // }
 
-router.post('/login', async (req, res, next) => {
-  let apiResult = apiResultSetFunc(200, '기본data', '기본resutl');
+//암호찾기 기능 Api 라우터 구현
+router.post('/find', async (req, res, next) => {
+  //DB의 email, name 컬럼이 암호화 되어있지 않다고 가정
+  var email = req.body.email;
 
   try {
-    let { email, member_password } = req.body;
-    console.log(email, member_password);
-    email = aes.encrypt(email, process.env.MYSQL_AES_KEY);
-    const member = await db.Member.findOne({
-      where: {
-        email,
-      },
-    });
-
-    if (!member)
-      apiResult = apiResultSetFunc(
-        400,
-        'NotExistEmail',
-        '해당 이메일의 유저가 존재하지 않습니다.'
-      );
-    else {
-      let passwordResult = await bcrypt.compare(
-        member_password,
-        member.member_password
-      );
-      if (!passwordResult)
-        apiResult = apiResultSetFunc(
-          400,
-          'NotCorrectword',
-          '비밀번호가 틀렸습니다.'
-        );
-      else {
-        var memberTokenData = {
+    const member = await db.Member.findOne({ where: { email: email } });
+    if (!member) {
+      return res.json({ code: 400, data: null, resultMsg: 'Member not Found' });
+    } else {
+      const token = await jwt.sign(
+        {
           member_id: member.member_id,
-          email: member.email,
+          email: email,
           name: member.name,
-          profile_img_path: member.profile_img_path,
-          telephone: member.telephone,
-        };
-      }
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h', issuer: 'mormcamp' }
+      );
+
+      //메일로 링크 주소 발송
+      console.log(token);
+
+      return res.json({
+        code: 200,
+        data: token,
+        resultMsg: `Send email to ${email}.`,
+      });
     }
-  } catch {}
+  } catch (err) {
+    return res.json({
+      code: 500,
+      data: null,
+      resultMsg: 'Server ERROR in /api/member/find POST',
+    });
+  }
 });
 
 router.get('/all', async (req, res) => {
-  var apiResult = {
-    code: 200,
-    data: [],
-    result: 'ok',
-  };
-
-//암호찾기 기능 Api 라우터 구현
-router.post('/find', async(req,res,next)=>{
-    //DB의 email, name 컬럼이 암호화 되어있지 않다고 가정
-    var email = req.body.email;
-
-    try{
-        const member = await db.Member.findOne({where:{email:email}});
-        if(!member){
-            return res.json({code:400, data:null, resultMsg:"Member not Found"});
-        }else{
-            const token = await jwt.sign({
-                member_id:member.member_id,
-                email:email,
-                name:member.name,
-            }, process.env.JWT_SECRET, {expiresIn:'24h', issuer:'mormcamp'});
-
-            //메일로 링크 주소 발송
-            console.log(token);
-
-            return res.json({code:200, data:token, resultMsg:`Send email to ${email}.`});
-        }
-    }catch(err){
-        return res.json({code:500, data:null, resultMsg:"Server ERROR in /api/member/find POST"});
-    }
-});
-
-
-router.get('/all',async(req,res)=>{
   try {
     const member_list = [
       {
@@ -192,6 +155,8 @@ router.post('/entry', async (req, res, next) => {
     console.log('hi3');
     member.telephone = aes.encrypt(member.telephone, process.env.MYSQL_AES_KEY);
     console.log('hi4');
+    console.log('MEMBER---', member);
+
     search_member = await db.Member.findOne({
       where: {
         email: member.email,
@@ -214,6 +179,77 @@ router.post('/entry', async (req, res, next) => {
     }
   } catch (err) {
     apiResult = apiResultSetFunc(500, null, 'failed or server error! in entry');
+  }
+  res.json(apiResult);
+});
+
+router.post('/login', async (req, res, next) => {
+  var apiResult = {
+    code: 400,
+    data: null,
+    msg: '',
+  };
+
+  try {
+    const { email, password } = req.body;
+
+    //step1:로그인(인증)-동일메일주소 여부 체크
+    const member = await db.Member.findOne({ where: { email: email } });
+    var resultMsg = '';
+
+    if (!member) {
+      resultMsg = 'NotExistEmail';
+      apiResult.code = 400;
+      apiResult.data = null;
+      apiResult.msg = resultMsg;
+    } else {
+      var compareResult = await bcrypt.compare(
+        password,
+        member.member_password
+      );
+      if (compareResult) {
+        resultMsg = 'Ok';
+        member.member_password = '';
+        member.telephone = AES.decrypt(
+          member.telephone,
+          process.env.MYSQL_AES_KEY
+        );
+
+        //step3: 인증된 사용자의 기본정보 JWT토큰 생성 발급
+        //step3.1: JWT토큰에 담을 사용자 정보 생성
+        //JWT인증 사용자정보 토큰 값 구조 정의 및 데이터 세팅
+        const { member_id, email, name, profile_img_path, telephone } = member;
+
+        var memberTokenData = {
+          member_id,
+          email,
+          name,
+          profile_img_path,
+          telephone,
+          etc: '기타정보',
+        };
+
+        const token = await jwt.sign(memberTokenData, process.env.JWT_SECRET, {
+          expiresIn: '24h',
+          issuer: 'myjeong19',
+        });
+
+        apiResult.code = 200;
+        apiResult.data = token;
+        apiResult.msg = resultMsg;
+      } else {
+        resultMsg = 'NotCorrectPassword';
+
+        apiResult.code = 400;
+        apiResult.data = null;
+        apiResult.msg = resultMsg;
+      }
+    }
+  } catch (err) {
+    console.log('서버에러발생-/api/member/entry:', err.message);
+    apiResult.code = 500;
+    apiResult.data = null;
+    apiResult.msg = 'Failed';
   }
   res.json(apiResult);
 });
