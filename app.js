@@ -6,6 +6,7 @@ var logger = require("morgan");
 const layout = require("express-ejs-layouts");
 require('dotenv').config();
 
+var session = require('express-session')
 var sequelize = require('./models/index.js').sequelize;
 const cors = require('cors');
 
@@ -18,6 +19,20 @@ var memberAPIRouter = require("./routes/memberAPI");
 var app = express();
 
 sequelize.sync();
+
+//서버세션 설정
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: true, 
+    secret: "testsecret", 
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge:1000 * 60 * 5 
+    },
+  }),
+);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

@@ -5,9 +5,8 @@ const Sequelize = require('sequelize');
 const env = process.env.NODE_ENV || 'development';
 
 //DB연결 환경설정정보 변경처리//관련정보 수정
-const config = require(path.join(__dirname, '..', 'config', 'config.json'))[
-  env
-];
+//commenet - config.js를 require하도록 수정했습니다. 충돌시 참고해주세요. 
+const config = require('../config/config.js')[env];
 
 //데이터 베이스 객체
 const db = {};

@@ -14,6 +14,33 @@ var apiResult = {
     resultMsg: ""
   };
 
+//암호찾기 기능 Api 라우터 구현
+router.post('/find', async(req,res,next)=>{
+    //DB의 email, name 컬럼이 암호화 되어있지 않다고 가정
+    var email = req.body.email;
+
+    try{
+        const member = await db.Member.findOne({where:{email:email}});
+        if(!member){
+            return res.json({code:400, data:null, resultMsg:"Member not Found"});
+        }else{
+            const token = await jwt.sign({
+                member_id:member.member_id,
+                email:email,
+                name:member.name,
+            }, process.env.JWT_SECRET, {expiresIn:'24h', issuer:'mormcamp'});
+
+            //메일로 링크 주소 발송
+            console.log(token);
+
+            return res.json({code:200, data:token, resultMsg:`Send email to ${email}.`});
+        }
+    }catch(err){
+        return res.json({code:500, data:null, resultMsg:"Server ERROR in /api/member/find POST"});
+    }
+});
+
+
 router.get('/all',async(req,res)=>{
 
     var apiResult = {
