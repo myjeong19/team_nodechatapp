@@ -61,7 +61,7 @@ router.get('/all', async (req, res, next) => {
     apiResult.code = 500;
     apiResult.data = null;
     apiResult.result = 'Failed';
-  }
+  } 
 
   res.json(apiResult);
 });
