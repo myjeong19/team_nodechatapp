@@ -61,6 +61,78 @@ router.post("/login", async (req, res, next) => {
           telephone: member.telephone,
         };
 
+
+//해당 객체를 frontend로 전송합니다.
+var apiResult = {
+    code: 400,
+    data: null,
+    resultMsg: ""
+  };
+
+router.get('/all',async(req,res)=>{
+
+    var apiResult = {
+        code:200,
+        data:[],
+        result:"ok"
+    };
+
+
+    try{
+        
+        const member_list = [
+            {
+                member_id: 1,
+                email: 'hwoarang09@naver.com',
+                member_password: '맴버1비번',
+                name: '윤성원',
+                profile_img_path: '멤버1이미지주소',
+                telephone: '01022883839',
+                entry_type_code: 1,
+                use_state_code: 1,
+                birth_date: '900311',
+                reg_date: Date.now(),
+                reg_member_id: 881,
+                edit_date: Date.now(),
+                edit_member_id: 991
+            },
+            {
+                member_id: 2,
+                email: 'rang0909@naver.com',
+                member_password: '맴버2비번',
+                name: '윤성일',
+                profile_img_path: '멤버2이미지주소',
+                telephone: '01122883839',
+                entry_type_code: 1,
+                use_state_code: 1,
+                birth_date: '910312',
+                reg_date: Date.now(),
+                reg_member_id: 882,
+                edit_date: Date.now(),
+                edit_member_id: 992
+            },
+            {
+                member_id: 3,
+                email: 'a01022883839@gmail.ocm',
+                member_password: '맴버3비번',
+                name: '윤성삼',
+                profile_img_path: '멤버3이미지주소',
+                telephone: '01222883839',
+                entry_type_code: 0,
+                use_state_code: 0,
+                birth_date: '900313',
+                reg_date: Date.now(),
+                reg_member_id: 883,
+                edit_date: Date.now(),
+                edit_member_id: 993
+            }
+        ];
+
+        apiResult.code = 200;
+        apiResult.data = member_list;
+        apiResult.result = "ok";
+
+
         var token = await jwt.sign(memberTokenData, process.env.JWT_SECRET, {
           expiresIn: "24h",
           issuer: "msoftware",
