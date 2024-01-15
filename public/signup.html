@@ -1,96 +1,311 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<!-- Required meta tags -->
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
-		<!-- Meta -->
-		<meta name="description" content="Quick Chat App">
-		<meta name="author" content="ParkerThemes">
-		<link rel="shortcut icon" href="img/fav.png" />
+    <!-- Meta -->
+    <meta name="description" content="Quick Chat App" />
+    <meta name="author" content="ParkerThemes" />
+    <link rel="shortcut icon" href="img/fav.png" />
 
-		<!-- Title -->
-		<title>Quick Chat App</title>
+    <!-- Title -->
+    <title>Quick Chat App</title>
 
-
-		<!-- *************
+    <!-- *************
 			************ Common Css Files *************
 		************ -->
-		<!-- Bootstrap css -->
-		<link rel="stylesheet" href="css/bootstrap.min.css">
-		
-		<!-- Main css -->
-		<link rel="stylesheet" href="css/main.css">
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
 
+    <!-- Main css -->
+    <link rel="stylesheet" href="css/main.css" />
 
-		<!-- *************
+    <!-- *************
 			************ Vendor Css Files *************
 		************ -->
-
-	</head>
-	<body class="authentication">
-
-		<!-- *************
+  </head>
+  <body class="authentication">
+    <!-- *************
 			************ Login container start *************
 		************* -->
-		<div class="login-container">
-			
-			<!-- Row start -->
-			<div class="row no-gutters h-100">
-				<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-					<div class="login-about">
-						<div class="slogan">
-							<span>Design</span>
-							<span>Made</span>
-							<span>Simple.</span>
-						</div>
-						<div class="about-desc">
-							Quick Chat is an intelligent and communications tool, built for teams. It provides an integrated platform that makes team communication easy and efficient.
-						</div>
-						<a href="index.html" class="know-more">Know More <img src="img/right-arrow.svg"></a>
+    <div class="login-container">
+      <!-- Row start -->
+      <div class="row no-gutters h-100">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+          <div class="login-about">
+            <div class="slogan">
+              <span>Design</span>
+              <span>Made</span>
+              <span>Simple.</span>
+            </div>
+            <div class="about-desc">
+              Quick Chat is an intelligent and communications tool, built for
+              teams. It provides an integrated platform that makes team
+              communication easy and efficient.
+            </div>
+            <a href="index.html" class="know-more"
+              >Know More <img src="img/right-arrow.svg"
+            /></a>
+          </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+          <div class="login-wrapper">
+            <form id="entryForm" name="entryForm">
+              <div class="login-screen">
+                <div class="login-body">
+                  <a href="/entry" class="login-logo">
+                    <img src="img/logo.svg" alt="Quick Chat" />
+                  </a>
+                  <h6>Welcome to Quick Chat App,<br />Create your account.</h6>
+                  <!--이메일-->
+                  <div class="field-wrapper">
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      autofocus
+                      maxlength="100"
+                    />
+                    <div class="field-placeholder">Email ID</div>
+                  </div>
+                  <!--이름-->
+                  <div class="field-wrapper">
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      autofocus
+                      maxlength="100"
+                    />
+                    <div class="field-placeholder">Name</div>
+                  </div>
 
-					</div>
-				</div>
-				<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-					<div class="login-wrapper">
-						<form action="index.html">
-							<div class="login-screen">
-								<div class="login-body">
-									<a href="index.html" class="login-logo">
-										<img src="img/logo.svg" alt="Quick Chat">
-									</a>
-									<h6>Welcome to Quick Chat App,<br>Create your account.</h6>
-									<div class="field-wrapper">
-										<input type="email" autofocus>
-										<div class="field-placeholder">Email ID</div>
-									</div>
-									<div class="field-wrapper">
-										<input type="password">
-										<div class="field-placeholder">Password</div>
-									</div>
-									<div class="field-wrapper mb-3">
-										<input type="password">
-										<div class="field-placeholder">Confirm Password</div>
-									</div>
-									<div class="actions">
-										<button type="submit" class="btn btn-primary ml-auto">Sign Up</button>
-									</div>
-								</div>
-								<div class="login-footer">
-									<span class="additional-link">Have an account? <a href="login.html" class="btn btn-secondary">Login</a></span>
-								</div>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-			<!-- Row end -->
+                  <!--비밀번호-->
+                  <div class="field-wrapper">
+                    <input
+                      type="password"
+                      id="member_password"
+                      name="member_password"
+                      maxlength="100"
+                    />
+                    <div class="field-placeholder">Password</div>
+                  </div>
+                  <!--비번확인-->
+                  <div class="field-wrapper mb-3">
+                    <input
+                      type="password"
+                      id="confirm_member_password"
+                      name="confirm_member_password"
+                      maxlength="100"
+                    />
+                    <div class="field-placeholder">Confirm Password</div>
+                  </div>
+                  <!--핸드폰-->
+                  <div class="field-wrapper">
+                    <input
+                      type="telephone"
+                      id="telephone"
+                      name="telephone"
+                      maxlength="20"
+                    />
+                    <div class="field-placeholder">Telephone</div>
+                  </div>
+                  <!--생년월일-->
+                  <div class="field-wrapper">
+                    <input type="date" id="birth_date" name="birth_date" />
+                    <div class="field-placeholder">BirthDate</div>
+                  </div>
+                  <!--가입경로-->
+                  <div class="field-wrapper">
+                    <select
+                      name="entry_type_code"
+                      id="entry_type_code"
+                      class="form-control"
+                    >
+                      <option value="1">📱SNS</option>
+                      <option value="2">🌐인터넷검색</option>
+                      <option value="3">🆕뉴스</option>
+                      <option value="4">🎢커뮤니티</option>
+                    </select>
+                    <div class="field-placeholder">EntryType</div>
+                  </div>
+                  <div class="actions">
+                    <button type="submit" class="btn btn-primary ml-auto">
+                      Sign Up
+                    </button>
+                  </div>
+                </div>
+                <div class="login-footer">
+                  <span class="additional-link"
+                    >Have an account?
+                    <a href="/" class="btn btn-secondary">Login</a></span
+                  >
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="js/jquery.min.js"></script>
 
-		</div>
-		<!-- *************
-			************ Login container end *************
-		************* -->
+  <script>
+    const form = document.getElementById("entryForm");
 
-	</body>
+    const handleSubmit = async (e) => {
+      const email = document.getElementById("email");
+      const password = document.getElementById("member_password");
+      const confirmPassword = document.getElementById(
+        "confirm_member_password"
+      );
+      const name = document.getElementById("name");
+      const birth_date = document.getElementById("birth_date");
+      const telephone = document.getElementById("telephone");
+      const entry_type_code = document.getElementById("entry_type_code");
+
+      var entryData = {
+        email: $("#email").val(),
+        member_password: $("#member_password").val(),
+        name: $("#name").val(),
+        birth_date: $("#birth_date").val(),
+        telephone: $("#telephone").val(),
+        entry_type_code: $("#entry_type_code").val(),
+      };
+      console.log("handleSubmit Entry start");
+      if (!email.value) {
+        e.preventDefault();
+        await Swal.fire({
+          icon: "error",
+          title: "회원가입 실패",
+          text: "이메일을 입력해주세요.",
+        });
+
+        return false;
+      }
+      if (!name.value) {
+        e.preventDefault();
+        await Swal.fire({
+          icon: "error",
+          title: "회원가입 실패",
+          text: "이름을 입력해주세요.",
+        });
+
+        return false;
+      }
+      if (!member_password.value) {
+        e.preventDefault();
+        await Swal.fire({
+          icon: "error",
+          title: "회원가입 실패",
+          text: "비밀번호를 입력해주세요.",
+        });
+        return false;
+      }
+
+      if (!confirm_member_password.value) {
+        e.preventDefault();
+        await Swal.fire({
+          icon: "error",
+          title: "회원가입 실패",
+          text: "비밀번호 확인란을 입력해주세요.",
+        });
+
+        return false;
+      }
+
+      if (!telephone.value) {
+        e.preventDefault();
+        await Swal.fire({
+          icon: "error",
+          title: "회원가입 실패",
+          text: "전화번호를 입력해주세요.",
+        });
+
+        return false;
+      }
+      if (!birth_date.value) {
+        e.preventDefault();
+        await Swal.fire({
+          icon: "error",
+          title: "회원가입 실패",
+          text: "생년월일을 입력해주세요.",
+        });
+
+        return false;
+      }
+      if (member_password.value !== confirm_member_password.value) {
+        e.preventDefault();
+        await Swal.fire({
+          icon: "error",
+          title: "회원가입 실패",
+          text: "비밀번호가 일치하지 않습니다",
+        });
+
+        password.value = "";
+        confirmPassword.value = "";
+
+        return false;
+      }
+
+      $.ajax({
+        url: "/api/member/entry",
+        type: "POST",
+        data: entryData,
+        success: async (result) => {
+          console.log("회원가입 결과값 확인 : ", result);
+          if (result.code == "200") {
+            //완료팝업
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "회원가입이 완료되었습니다.",
+              showConfirmButton: false,
+              didClose: () => {
+                location.href = "/login.html";
+              },
+            });
+          } else {
+            if (result.code == "400" && result.data == "AlreadyExistEmail") {
+              await Swal.fire({
+                icon: "error",
+                title: "회원가입 실패",
+                text: result.resultMsg,
+                didClose: () => {
+                  email.focus();
+                },
+              });
+              email.value = "";
+              /*
+              member_password.value = "";
+              confirmPassword.value = "";
+              name.value = "";
+              birth_date.value = "";
+              telephone.value = "";
+              entry_type_code.value = "";
+    			*/
+            }
+          }
+        },
+        error: function (error) {
+          console.log("AJAX 호출 오류: ", error);
+        },
+      });
+      e.preventDefault();
+    };
+    form.addEventListener("submit", handleSubmit);
+  </script>
+  <style>
+    body.swal2-height-auto {
+      height: 0 !important;
+      max-height: 0 !important;
+      overflow-y: hidden !important;
+    }
+  </style>
 </html>
