@@ -7,6 +7,7 @@ const layout = require("express-ejs-layouts");
 require("dotenv").config();
 var sequelize = require("./models/index.js").sequelize;
 
+var session = require('express-session')
 require('dotenv').config();
 var sequelize = require('./models/index.js').sequelize;
 const cors = require('cors');
@@ -21,6 +22,20 @@ var commonAPIRouter = require("./routes/commonAPI");
 var app = express();
 
 sequelize.sync();
+
+//서버세션 설정
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: true, 
+    secret: "testsecret", 
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge:1000 * 60 * 5 
+    },
+  }),
+);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

@@ -3,6 +3,9 @@ var router = express.Router();
 var db = require("../models/index");
 const member = require("../models/member");
 var Op = db.Sequelize.Op;
+const jwt = require('jsonwebtoken');
+var AES = require('mysql-aes');
+var bcrypt = require('bcryptjs');
 
 /* GET home page. */
 
@@ -90,4 +93,35 @@ router.post("/find", async (req, res, next) => {
     res.redirect("/");
   }
 });
+
+//암호찾기 재설정 페이지 -password-init- 부분 구현 라우팅 메소드, Backend로 처리
+//http://localhost:3000/password-init?token=~
+router.get("/password-init", async(req,res,next)=>{
+  const token = req.query.token;
+
+  try{
+    var tokenData = await jwt.verify(token, process.env.JWT_SECRET);
+    //decrypt된 json 데이터 전송
+    res.render('password-init', {code:200, data:tokenData, resultMsg:"OK"});
+
+  }catch(err){
+    console.log("This address is unvalid.");
+    res.redirect('/login.html');
+  }
+});
+
+router.post("/password-init", async(req,res,next)=>{
+  var email= req.body.email;
+  var password= req.body.password;
+
+  const member = await db.Member.findOne({where:{email:email}});
+  member.member_password=await bcrypt.hash(password,12);
+  await db.Member.update(member, {where:{email:email}});
+
+  console.log("Password update complete");
+
+  res.redirect('/login.html');
+  // res.redirect('/');
+});
+
 module.exports = router;
