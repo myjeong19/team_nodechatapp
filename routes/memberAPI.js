@@ -178,6 +178,7 @@ router.post('/entry', async (req, res, next) => {
       );
     }
   } catch (err) {
+    console.log(err);
     apiResult = apiResultSetFunc(500, null, 'failed or server error! in entry');
   }
   res.json(apiResult);
@@ -452,6 +453,11 @@ router.get('/profile', tokenAuthChecking, async (req, res, next) => {
 
   res.json(apiResult);
 });
+
+
+
+
+
 //아래의 에러처리 코드는 무조건 router정의가 다 끝난 최하단에 위치해야 함.
 //위에서 정의하지 않은 라우터에 대한 모든 요청에 대해서
 //Error 객체를 생성하는 아래의 미들웨어를 실행한다.

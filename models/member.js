@@ -30,7 +30,7 @@ module.exports = function (sequelize, DataTypes) {
         comment: "프로필이미지경로",
       },
       telephone: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(500),
         allowNull: false,
         comment: "전화번호",
       },
