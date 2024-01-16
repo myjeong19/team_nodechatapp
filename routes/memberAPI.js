@@ -221,6 +221,7 @@ router.post('/login', async (req, res, next) => {
         //JWT인증 사용자정보 토큰 값 구조 정의 및 데이터 세팅
         const { member_id, email, name, profile_img_path, telephone } = member;
 
+        //TOKEN 구조
         var memberTokenData = {
           member_id,
           email,
@@ -284,6 +285,43 @@ router.post('/find', async (req, res, next) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+router.post('/password/update', async (req, res, next) => {
+  try {
+
+    //token DATA, DB member DATA 추출
+    const token = req.headers.authorization;
+    var tokenData = await jwt.verify(token, process.env.JWT_SECRET);
+    var member = await db.Member.findOne({where:{member_id:tokenData.member_id}});
+
+    var { currentPW, newPW} = req.body;
+
+    if(!member){
+      return res.json({code:400, data:null, resultMsg:"Member not found"});
+    }else{
+      // 입력한 currentPW와 member의 PW가 일치하면 update
+      if (await bcrypt.compare(currentPW, member.member_password)){
+        var updateMember = {
+          member_password: await bcrypt.hash(newPW, 12),
+          edit_date: Date.now(),
+          edit_member_id: member.member_id
+        };
+
+        var test = await db.Member.update(updateMember, {where:{member_id:member.member_id}}); //여기에서 오류
+        console.log(test); 
+        return res.json({code:200, data:member.name, resultMsg:"password change success!"});
+
+      } else{
+        return res.json({code:400, data:null, resultMsg:"Password is not correct"});
+      }
+    }
+
+  } catch (err) {
+    return res.json({ code: 500, data: null, resultMsg: "Server ERROR in /api/member/password/update" });
+  }
+
+});
+
 
 //GET /all
 //에러처리
