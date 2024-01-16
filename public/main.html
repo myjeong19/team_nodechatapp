@@ -1426,7 +1426,6 @@
 
                     <!-- 비밀번호 변경 UI -->
                     <div class="account-settings-block">
-
                       <!-- change password 항목을 open 해주는 버튼  -->
                       <div class="account-settings-header" id="changePwd">
                         <button
@@ -1443,37 +1442,40 @@
                       </div>
 
                       <!-- change password 폼 영역 -->
-                        <div
-                          id="changePwdCollapse"
-                          class="collapse"
-                          aria-labelledby="changePwd"
-                          data-parent="#settingsAccordion"
-                        >
-                          <div class="account-settings-body">
-                            <div class="field-wrapper">
-                              <input type="password" id="currentPW" />
-                              <div class="field-placeholder">
-                                Current Password
-                              </div>
-                            </div>
-                            <div class="field-wrapper">
-                              <input type="password" id="newPW" />
-                              <div class="field-placeholder">New Password</div>
-                            </div>
-                            <div class="field-wrapper m-0">
-                              <input type="password" id="confirmPW" />
-                              <div class="field-placeholder">
-                                Confirm Password
-                              </div>
-                            </div>
-
-                            <div class="mt-3" id="changePwdForm" >
-                              <button class="btn btn-primary btn-block" type="submit">
-                                Change Password
-                              </button>
+                      <div
+                        id="changePwdCollapse"
+                        class="collapse"
+                        aria-labelledby="changePwd"
+                        data-parent="#settingsAccordion"
+                      >
+                        <div class="account-settings-body">
+                          <div class="field-wrapper">
+                            <input type="password" id="currentPW" />
+                            <div class="field-placeholder">
+                              Current Password
                             </div>
                           </div>
+                          <div class="field-wrapper">
+                            <input type="password" id="newPW" />
+                            <div class="field-placeholder">New Password</div>
+                          </div>
+                          <div class="field-wrapper m-0">
+                            <input type="password" id="confirmPW" />
+                            <div class="field-placeholder">
+                              Confirm Password
+                            </div>
+                          </div>
+
+                          <div class="mt-3" id="changePwdForm">
+                            <button
+                              class="btn btn-primary btn-block"
+                              type="submit"
+                            >
+                              Change Password
+                            </button>
+                          </div>
                         </div>
+                      </div>
                     </div>
                     <!-- 비밀번호 변경 UI end  -->
 
@@ -2241,7 +2243,8 @@
 
     <script>
       const handleUserLoginCheck = () => {
-        console.log(loginUserToken);
+        const loginUserToken = localStorage.getItem('userauthtoken');
+
         if (!loginUserToken) {
           location.href = '/login.html';
         }
@@ -2305,50 +2308,48 @@
           location.href = '/login.html';
         }
       });
-      
-      $("#changePwdForm").click(function(){
+
+      $('#changePwdForm').click(function () {
         var passwordChange = {
-          "currentPW": $("#currentPW").val(),
-          "newPW": $("#newPW").val(),
-          "confirmPW": $("#confirmPW").val()
+          currentPW: $('#currentPW').val(),
+          newPW: $('#newPW').val(),
+          confirmPW: $('#confirmPW').val(),
         };
 
-        if(passwordChange.currentPW==""){
-          Swal.fire({icon:'error', title:'Enter your current password'});
+        if (passwordChange.currentPW == '') {
+          Swal.fire({ icon: 'error', title: 'Enter your current password' });
           return false;
         }
-        if(passwordChange.newPW==""){
-          Swal.fire({icon:'error', title:"Enter new password"});
+        if (passwordChange.newPW == '') {
+          Swal.fire({ icon: 'error', title: 'Enter new password' });
           return false;
         }
-        if(passwordChange.confirmPW==""){
-          Swal.fire({icon:'error', title:'Enter confirm password'});
+        if (passwordChange.confirmPW == '') {
+          Swal.fire({ icon: 'error', title: 'Enter confirm password' });
           return false;
         }
-        if(passwordChange.newPW!=passwordChange.confirmPW){
-          Swal.fire({icon: 'error', title: 'Confirm Password not correct'});
+        if (passwordChange.newPW != passwordChange.confirmPW) {
+          Swal.fire({ icon: 'error', title: 'Confirm Password not correct' });
           return false;
-        };
+        }
 
         $.ajax({
-          url:"/api/member/password/update",
-          type: "POST",
-          headers: {Authorization: localStorage.getItem('userauthtoken')},
-          data:passwordChange,
-          success:function(result){
-            console.log("비밀번호 변경 요청 결과: ", result);
+          url: '/api/member/password/update',
+          type: 'POST',
+          headers: { Authorization: localStorage.getItem('userauthtoken') },
+          data: passwordChange,
+          success: function (result) {
+            console.log('비밀번호 변경 요청 결과: ', result);
 
-            if(result.code==200){
-              Swal.fire({icon:'success',title: result.resultMsg});
-            }else{
-              Swal.fire({icon:'error', title:result.resultMsg});
+            if (result.code == 200) {
+              Swal.fire({ icon: 'success', title: result.resultMsg });
+            } else {
+              Swal.fire({ icon: 'error', title: result.resultMsg });
             }
-          }
-        })
+          },
+        });
         return false;
-      
       });
-
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
