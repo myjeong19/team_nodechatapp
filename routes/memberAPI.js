@@ -257,35 +257,6 @@ router.post('/login', async (req, res, next) => {
   res.json(apiResult);
 });
 
-//find api
-router.post('/find', async (req, res, next) => {
-  try {
-    let { email } = req.body;
-    let de_email = email;
-    email = await aes.encrypt(email, process.env.MYSQL_AES_KEY);
-
-    const member = await db.Member.findOne({
-      where: {
-        email,
-      },
-    });
-
-    if (!member) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'No member ...to find' });
-    } else {
-      return res.status(200).json({
-        success: true,
-        message: `${de_email}'s encrypted password is ${member.member_password}`,
-      });
-    }
-  } catch (err) {
-    console.error('Error in member POST /find:', err);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
 router.post('/password/update', async (req, res, next) => {
   try {
 
