@@ -1339,7 +1339,12 @@
               <!-- Tab content header end -->
 
               <!-- Account settings start -->
-              <div class="account-settings">
+              <form
+                class="account-settings"
+                id="form-settings"
+                method="post"
+                action="/api/member/memberModify"
+              >
                 <!-- Account Settings Container Start -->
                 <div class="account-settings-container">
                   <div class="accordion" id="settingsAccordion">
@@ -1386,20 +1391,33 @@
                           </div>
 
                           <div class="field-wrapper">
-                            <input type="text" value="Jeivxezer Lopexz" />
+                            <input
+                              type="text"
+                              value=""
+                              id="member_name"
+                              name="member_name"
+                            />
                             <div class="field-placeholder">Full Name</div>
                           </div>
 
                           <div class="field-wrapper">
                             <input
                               type="email"
-                              value="jeivxezer-lopexz@email.com"
+                              value=""
+                              id="email"
+                              name="email"
+                              disabled
                             />
                             <div class="field-placeholder">Email</div>
                           </div>
 
                           <div class="field-wrapper m-0">
-                            <input type="text" value="0 0000 00000" />
+                            <input
+                              type="text"
+                              value=""
+                              id="telephone"
+                              name="telephone"
+                            />
                             <div class="field-placeholder">Contact</div>
                           </div>
                         </div>
@@ -1565,7 +1583,7 @@
                     Save Changes
                   </button>
                 </div>
-              </div>
+              </form>
               <!-- Account settings end -->
             </div>
           </div>
@@ -2223,7 +2241,7 @@
 
     <script>
       const handleUserLoginCheck = () => {
-        const loginUserToken = localStorage.getItem('userauthtoken');
+        console.log(loginUserToken);
         if (!loginUserToken) {
           location.href = '/login.html';
         }
@@ -2253,6 +2271,41 @@
         });
       });
 
+      $('#settings-tab').click(function () {
+        //웹브라우저 로컬스토리지에 저장된 사용자인증 JWT토큰정보 추출하기
+        var loginUserToken = localStorage.getItem('userauthtoken');
+
+        if (loginUserToken) {
+          $.ajax({
+            type: 'GET',
+            url: '/api/member/profile',
+            headers: {
+              Authorization: `Bearer ${loginUserToken}`,
+            },
+            dataType: 'json',
+            success: function (result) {
+              console.log('현재 사용자 정보 호출결과: ', result);
+
+              if (result.code == 200) {
+                $('#email').val(result.data.email);
+                $('#member_name').val(result.data.name);
+                $('#telephone').val(result.data.telephone);
+                $('#profile_img').attr('src', result.data.profile_img_path);
+              } else {
+                if (result.code == 400) {
+                  alert(result.code);
+                }
+              }
+            },
+            error: function (err) {
+              console.log('백엔드 API호출 에러발생:', err);
+            },
+          });
+        } else {
+          location.href = '/login.html';
+        }
+      });
+      
       $("#changePwdForm").click(function(){
         var passwordChange = {
           "currentPW": $("#currentPW").val(),
@@ -2297,6 +2350,7 @@
       });
 
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
       body.swal2-height-auto {

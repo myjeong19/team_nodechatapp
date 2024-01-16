@@ -382,6 +382,30 @@ router.post('/modify', async (req, res, next) => {
   }
 });
 
+router.post('/memberModify', async (req, res, next) => {
+  const { email, name, telephone } = req.body;
+  const dbEmail = aes.encrypt(email, process.env.MYSQL_AES_KEY);
+
+  const updateMember = {
+    name,
+    telephone: aes.encrypt(telephone, process.env.MYSQL_AES_KEY),
+  };
+
+  try {
+    const selectedMember = await db.Member.findOne({
+      where: { email: dbEmail },
+    });
+    console.log(selectedMember);
+
+    if (selectedMember) {
+      await db.Member.update(updateMember, { where: { email: dbEmail } });
+      res.redirect('/main.html');
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 //POST /delete
 //에러처리
 //1. http://localhost:3000/api/member/delete  -> body에 member id="ㅁㅁ"-> catch문
