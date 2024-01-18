@@ -1,8 +1,3 @@
-
-
-
-//require("../dotenv").config();
-
 module.exports = {
   development: {
     username: process.env.DB_USER,
@@ -10,8 +5,8 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: "mysql",
-    timezone: "+09:00",
+    dialect: 'mysql',
+    timezone: '+09:00',
   },
   test: {
     username: process.env.TEST_DB_USER,
@@ -19,8 +14,8 @@ module.exports = {
     database: process.env.TEST_DB_NAME,
     host: process.env.TEST_DB_HOST,
     port: process.env.TEST_DB_PORT,
-    dialect: "mysql",
-    timezone: "+09:00",
+    dialect: 'mysql',
+    timezone: '+09:00',
   },
   production: {
     username: process.env.PRODUCTION_DB_USER,
@@ -28,7 +23,7 @@ module.exports = {
     database: process.env.PRODUCTION_DB_NAME,
     host: process.env.PRODUCTION_DB_HOST,
     port: process.env.PRODUCTION_DB_PORT,
-    dialect: "mysql",
-    timezone: "+09:00",
+    dialect: 'mysql',
+    timezone: '+09:00',
   },
 };
