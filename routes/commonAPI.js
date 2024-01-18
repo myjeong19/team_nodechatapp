@@ -39,6 +39,13 @@ router.post('/upload',upload.single('uploadProfile'),async(req,res)=>{
 
     try{
 
+    //파일이 입력되지 않았을 경우
+    if(!req.file){
+        apiResult.code = 400;
+        apiResult.data = null;
+        apiResult.resultMsg = "파일이 업로드되지 않았습니다.";
+    }
+
     //step1-2: 업로드된 파일정보 체크하기
     const uploadFile = req.file;
 
@@ -50,7 +57,7 @@ router.post('/upload',upload.single('uploadProfile'),async(req,res)=>{
     var fileType=uploadFile.mimetype; //파일 포맷
 
     apiResult.code = 200;
-    apiResult.data = {filePath,fileName,fileOrignalName,fileSize,fileType};
+    apiResult.data = filePath;
     apiResult.resultMsg = "ok";
         
     }catch(err){
