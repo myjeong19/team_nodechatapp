@@ -134,10 +134,10 @@ module.exports = server => {
           }
         } else {
           //그룹채널 정보조회
-          //전달된 채널 고유번호로 조회해서 channelData에 할당하면 됩니다.
+          channelData = await db.Channel.findOne({where:{channel_id:channel.channelId}});
         }
 
-        //step2: 현재 채팅방 접속자 정보 조회 및 정보 업데이트
+        //step2: 현재 채팅방 접속자 정보 조회 및 정보 업데이트-------------------------
         //현재 접속자의 접속상태 와 접속일시 정보 업데이트 처리
         var updateMember = {
           active_state_code: 1,
