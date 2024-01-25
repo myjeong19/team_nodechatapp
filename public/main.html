@@ -1339,7 +1339,12 @@
               <!-- Tab content header end -->
 
               <!-- Account settings start -->
-              <div class="account-settings">
+              <form
+                class="account-settings"
+                id="form-settings"
+                method="post"
+                action="/api/member/memberModify"
+              >
                 <!-- Account Settings Container Start -->
                 <div class="account-settings-container">
                   <div class="accordion" id="settingsAccordion">
@@ -1384,26 +1389,42 @@
                           </div>
 
                           <div class="field-wrapper">
-                            <input type="text" value="Jeivxezer Lopexz" />
+                            <input
+                              type="text"
+                              value=""
+                              id="member_name"
+                              name="member_name"
+                            />
                             <div class="field-placeholder">Full Name</div>
                           </div>
 
                           <div class="field-wrapper">
                             <input
                               type="email"
-                              value="jeivxezer-lopexz@email.com"
+                              value=""
+                              id="email"
+                              name="email"
+                              disabled
                             />
                             <div class="field-placeholder">Email</div>
                           </div>
 
                           <div class="field-wrapper m-0">
-                            <input type="text" value="0 0000 00000" />
+                            <input
+                              type="text"
+                              value=""
+                              id="telephone"
+                              name="telephone"
+                            />
                             <div class="field-placeholder">Contact</div>
                           </div>
                         </div>
                       </div>
                     </div>
+
+                    <!-- 비밀번호 변경 UI -->
                     <div class="account-settings-block">
+                      <!-- change password 항목을 open 해주는 버튼  -->
                       <div class="account-settings-header" id="changePwd">
                         <button
                           class="btn collapsed"
@@ -1417,6 +1438,8 @@
                           <div class="toggle-arrow"></div>
                         </button>
                       </div>
+
+                      <!-- change password 폼 영역 -->
                       <div
                         id="changePwdCollapse"
                         class="collapse"
@@ -1425,30 +1448,35 @@
                       >
                         <div class="account-settings-body">
                           <div class="field-wrapper">
-                            <input type="text" value="" />
+                            <input type="password" id="currentPW" />
                             <div class="field-placeholder">
                               Current Password
                             </div>
                           </div>
                           <div class="field-wrapper">
-                            <input type="password" value="" />
+                            <input type="password" id="newPW" />
                             <div class="field-placeholder">New Password</div>
                           </div>
                           <div class="field-wrapper m-0">
-                            <input type="password" value="" />
+                            <input type="password" id="confirmPW" />
                             <div class="field-placeholder">
                               Confirm Password
                             </div>
                           </div>
 
-                          <div class="mt-3">
-                            <button class="btn btn-primary btn-block">
+                          <div class="mt-3" id="changePwdForm">
+                            <button
+                              class="btn btn-primary btn-block"
+                              type="submit"
+                            >
                               Change Password
                             </button>
                           </div>
                         </div>
                       </div>
                     </div>
+                    <!-- 비밀번호 변경 UI end  -->
+
                     <div class="account-settings-block">
                       <div class="account-settings-header" id="notifications">
                         <button
@@ -1555,7 +1583,7 @@
                     Save Changes
                   </button>
                 </div>
-              </div>
+              </form>
               <!-- Account settings end -->
             </div>
           </div>
@@ -2214,6 +2242,7 @@
     <script>
       const handleUserLoginCheck = () => {
         const loginUserToken = localStorage.getItem('userauthtoken');
+
         if (!loginUserToken) {
           location.href = '/login.html';
         }
@@ -2269,7 +2298,82 @@
         }
       });
 
+        //웹브라우저 로컬스토리지에 저장된 사용자인증 JWT토큰정보 추출하기
+        var loginUserToken = localStorage.getItem('userauthtoken');
+
+        if (loginUserToken) {
+          $.ajax({
+            type: 'GET',
+            url: '/api/member/profile',
+            headers: {
+              Authorization: `Bearer ${loginUserToken}`,
+            },
+            dataType: 'json',
+            success: function (result) {
+              console.log('현재 사용자 정보 호출결과: ', result);
+
+              if (result.code == 200) {
+                $('#email').val(result.data.email);
+                $('#member_name').val(result.data.name);
+                $('#telephone').val(result.data.telephone);
+                $('#profile_img').attr('src', result.data.profile_img_path);
+              } else {
+                if (result.code == 400) {
+                  alert(result.code);
+                }
+              }
+            },
+            error: function (err) {
+              console.log('백엔드 API호출 에러발생:', err);
+            },
+          });
+        } else {
+          location.href = '/login.html';
+        }
+
+      $('#changePwdForm').click(function () {
+        var passwordChange = {
+          currentPW: $('#currentPW').val(),
+          newPW: $('#newPW').val(),
+          confirmPW: $('#confirmPW').val(),
+        };
+
+        if (passwordChange.currentPW == '') {
+          Swal.fire({ icon: 'error', title: 'Enter your current password' });
+          return false;
+        }
+        if (passwordChange.newPW == '') {
+          Swal.fire({ icon: 'error', title: 'Enter new password' });
+          return false;
+        }
+        if (passwordChange.confirmPW == '') {
+          Swal.fire({ icon: 'error', title: 'Enter confirm password' });
+          return false;
+        }
+        if (passwordChange.newPW != passwordChange.confirmPW) {
+          Swal.fire({ icon: 'error', title: 'Confirm Password not correct' });
+          return false;
+        }
+
+        $.ajax({
+          url: '/api/member/password/update',
+          type: 'POST',
+          headers: { Authorization: localStorage.getItem('userauthtoken') },
+          data: passwordChange,
+          success: function (result) {
+            console.log('비밀번호 변경 요청 결과: ', result);
+
+            if (result.code == 200) {
+              Swal.fire({ icon: 'success', title: result.resultMsg });
+            } else {
+              Swal.fire({ icon: 'error', title: result.resultMsg });
+            }
+          },
+        });
+        return false;
+      });
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
       body.swal2-height-auto {
@@ -2278,5 +2382,7 @@
         overflow-y: hidden !important;
       }
     </style>
+
+    <script src="/js/chat.js"></script>
   </body>
 </html>
