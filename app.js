@@ -1,9 +1,11 @@
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const layout = require('express-ejs-layouts');
+
 require('dotenv').config();
 var sequelize = require('./models/index.js').sequelize;
 
@@ -36,6 +38,8 @@ app.use(
   })
 );
 
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -51,6 +55,9 @@ app.set('layout extractMetas', true);
 //   origin: ["http://localhost:3000"],
 // })
 // );
+
+//모든 호출 허락
+app.use(cors());
 
 app.use(layout);
 app.use(logger('dev'));

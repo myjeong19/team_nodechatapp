@@ -49,7 +49,6 @@ router.post('/upload',upload.single('uploadProfile'),async(req,res)=>{
     //step1-2: 업로드된 파일정보 체크하기
     const uploadFile = req.file;
 
-
     var filePath ="/upload/"+uploadFile.filename; //서버에 실제 업로드된 물리적 파일명-도메인 주소가 생략된 파일링크주소
     var fileName = uploadFile.filename; //서버에 저장된 실제 물리파일명(파일명/확장자포함)
     var fileOrignalName = uploadFile.originalname; //클라이언트에서 선택한 오리지널 파일명
