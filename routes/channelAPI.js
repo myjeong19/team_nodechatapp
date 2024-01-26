@@ -205,7 +205,6 @@ router.get('/groupAll',tokenAuthChecking, async (req, res) => {
 
 
 
-
 router.post('/delete', async (req, res, next) => {
   try {
     var channel_id = req.body.channel_id;
