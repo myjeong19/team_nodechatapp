@@ -61,6 +61,7 @@ module.exports = server => {
         .emit('entryok', `${nickName}님이 채팅방에 입장했습니다`);
     });
 
+
     socket.on('groupmsg', async msgData => {
       var sendMsg = `${msgData.nickName}:${msgData.message}`;
       io.to(msgData.channelId).emit('receiveGroupMsg', sendMsg);

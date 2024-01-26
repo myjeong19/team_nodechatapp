@@ -5,6 +5,13 @@ const bcrypt = require('bcryptjs');
 const aes = require('mysql-aes');
 const jwt = require('jsonwebtoken');
 
+var db = require('../models/index');
+
+var {tokenAuthChecking} = require('./apiMiddleware.js');
+
+//각종 열거형 상수 참조하기 - 코드성 데이터
+var constants = require('../common/enum.js');
+
 /* GET home page. */
 var channel_list = [
   {
@@ -191,6 +198,39 @@ router.post('/modify', async (req, res, next) => {
   res.json(apiResult);
 });
 
+
+//오영석
+/*
+-전체 그룹채널 목록 조회 API
+-http://localhost:3000/api/channel/groupAll
+*/
+router.get('/groupAll',tokenAuthChecking, async (req, res) => {
+  
+  try {
+
+    var channels = await db.Channel.findAll({
+      attributes:['channel_id','comunity_id','channel_name','channel_img_path'],
+      where:{channel_state_code:constants.CHANNEL_STATE_CODE_USED}
+    });
+
+    apiResult.code = 200;
+    apiResult.data = channels;
+    apiResult.result = 'OK';
+
+  } catch (err) {
+
+    apiResult.code = 500;
+    apiResult.data = null;
+    apiResult.result = 'Failed';
+
+  }
+
+  res.json(apiResult);
+});
+
+
+
+
 router.post('/delete', async (req, res, next) => {
   try {
     var channel_id = req.body.channel_id;
@@ -242,5 +282,10 @@ router.get('/:cid', async (req, res, next) => {
 
   res.json(apiResult);
 });
+
+
+
+
+
 
 module.exports = router;
