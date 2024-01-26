@@ -500,14 +500,22 @@ router.post('/add', tokenAuthChecking, async(req,res,next)=>{
     });
     if(!member){
       console.error('member not found', err);
-      res.status(400).send('Member not found');
+      apiResult.code=400;
+      apiResult.data=null;
+      apiResult.result="Member not found";
+    }else{
+      apiResult.code=200;
+      apiResult.data=member;
+      apiResult.result="Sucess 멤버 데이터 전송";
     }
-
-    res.status(200).send(member);
   } catch (err) {
     console.error('Error in member POST /add:', err);
-    res.status(500).send('error in POST add');
+    apiResult.code=500;
+    apiResult.data=null;
+    apiResult.result="Error in /api/member/add POST";
   }
+
+  res.json(apiResult);
 });
 
 
