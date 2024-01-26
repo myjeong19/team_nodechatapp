@@ -175,7 +175,7 @@ router.post('/modify', async (req, res, next) => {
 
 //오영석
 /*
--전체 채널 목록 조회 API
+-전체 그룹채널 목록 조회 API
 -http://localhost:3000/api/channel/groupAll
 */
 router.get('/groupAll',tokenAuthChecking, async (req, res) => {

@@ -67,7 +67,7 @@ module.exports = server => {
     });
 
     //채팅방 입장하기
-    socket.on('entryChannel', async channel => {
+    socket.on('entryChannel', async (channel) => {
       try {
         var currentUser = jwt.verify(channel.token, process.env.JWT_SECRET);
 
@@ -135,7 +135,9 @@ module.exports = server => {
         } else {
           //그룹채널 정보조회
           //전달된 채널 고유번호로 조회해서 channelData에 할당하면 됩니다.
-
+          if (channel.channelType == 2){
+            
+          }
         }
 
         //step2: 현재 채팅방 접속자 정보 조회 및 정보 업데이트
