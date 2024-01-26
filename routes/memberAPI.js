@@ -7,6 +7,7 @@ let Op = db.Sequelize.Op;
 const bcrypt = require("bcryptjs");
 const aes = require("mysql-aes");
 var jwt = require("jsonwebtoken");
+const constants = require("../common/enum");
 
 const { mergeByKey, apiResultSetFunc } = require("./utils/utiles");
 const { tokenAuthChecking } = require("./apiMiddleware");
@@ -509,7 +510,13 @@ router.post("/add", async (req, res, next) => {
     var email_en = await aes.encrypt(email, process.env.MYSQL_AES_KEY);
     var member = await db.Member.findOne({
       where: { email: email_en },
-      attributes: ["member_id", "email", "name", "profile_img_path"],
+      attributes: [
+        "member_id",
+        "email",
+        "name",
+        "profile_img_path",
+        "use_state_code",
+      ],
     });
     if (!member) {
       console.error("member not found");

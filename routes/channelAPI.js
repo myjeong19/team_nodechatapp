@@ -4,6 +4,7 @@ const db = require("../models/index");
 const bcrypt = require("bcryptjs");
 const aes = require("mysql-aes");
 const jwt = require("jsonwebtoken");
+const constants = require("../common/enum");
 
 /* GET home page. */
 var channel_list = [
@@ -87,6 +88,7 @@ router.post("/create", async (req, res, next) => {
   //member_list에는 이메일이 암호화되서.
   //member_list_de는 개발용으로 확인하려고 암호화 안한 이메일 보내는 중
   //console.log("create body : ", req.body);
+
   try {
     var member_list = req.body.member_list;
 
@@ -98,12 +100,12 @@ router.post("/create", async (req, res, next) => {
     //채널 생성
     var channel = {
       community_id: 1, //기본값
-      category_code: 2, //그룹채팅방
+      category_code: constants.CHANNEL_TYPE_GROUP, //그룹채팅방
       channel_name: req.body.group_name,
-      user_limit: 100, //기본값
+      user_limit: constants.CHANNEL_LIMIT_DEFAULT, //기본값
       channel_img_path: req.body.group_image_path,
       channel_desc: `${req.body.group_name} 채팅방 입니다.`, //기본 소개글로 설정 후 추후 수정
-      channel_state_code: 0, //채팅방 생성 직후 비활성화 상태로 생성
+      channel_state_code: constants.CHANNEL_STATE_DEACTIVE, //채팅방 생성 직후 비활성화 상태로 생성
       reg_date: Date.now(),
       reg_member_id: req.body.member_id,
     };
@@ -123,8 +125,9 @@ router.post("/create", async (req, res, next) => {
         channel_id: newChannel.channel_id,
         member_id: req.body.member_id,
         nick_name: req.body.name,
-        member_type_code: 0, //0 관리자 1 사용자
-        active_state_code: 1, // 0 아웃 1 접속중
+        member_type_code: constants.MEMBER_TYPE_OWNER, //0 관리자 1 사용자
+        active_state_code: constants.MEMBER_STATE_LOGIN_IN, // 0 아웃 1 접속중
+        //방장은 일단 loginㅎ나 ㅅ아태
         last_contact_date: "",
         connection_id: "",
         ip_address: "",
@@ -148,8 +151,10 @@ router.post("/create", async (req, res, next) => {
           channel_id: newChannel.channel_id,
           member_id: targetmember.member_id,
           nick_name: targetmember.name,
-          member_type_code: 1, //0 관리자 1 사용자
-          active_state_code: 0,
+          member_type_code: constants.MEMBER_TYPE_MEMBER, //0 관리자 1 사용자
+          active_state_code: constants.MEMBER_STATE_LOGIN_IN, //0 아웃 1 로그인
+          //일반 멤버는 지금 접속해있는지 아닌지 모름.
+          //db검색해봐야 함.
           last_contact_date: "",
           connection_id: "",
           ip_address: "",

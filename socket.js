@@ -214,9 +214,8 @@ module.exports = (server) => {
     );
 
     //그룹채팅방 만들 때
-    socket.on("createGroupBtnFinal", (data) => {
-      console.log("createGroupBtnFinal : ", data);
-    });
+    require("./socketCodes/socketGroupCreate")(socket);
+
     //채팅 이력 정보 기록처리 함수
     async function ChattingMsgLogging(
       channelId,
