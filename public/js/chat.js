@@ -1,72 +1,8 @@
 //const constants = require("../common/enum");
-console.log("111");
+
 //const aes = require("mysql-aes");
 //import * as aes from "mysql-aes";
-console.log("112");
-var addGroupList = [];
-var createGroupObject = {};
 
-$("#createGroupBtn").click(function () {
-  addGroupList = [];
-});
-
-$("#createGroupBtnFinal").click(function () {
-  var loginUserToken = localStorage.getItem("userauthtoken");
-  var groupName = document.getElementById("createGroupNameInput").value;
-  createGroupObject = {
-    owner: currentUser.email,
-    group_name: groupName,
-    group_image_path: "",
-    member_list: addGroupList.join(", "),
-  };
-  console.log("createGroupObject : ", createGroupObject);
-  $.ajax({
-    type: "POST",
-    url: "/api/channel/create",
-    data: createGroupObject,
-    headers: {
-      Authorization: `Bearer ${loginUserToken}`,
-    },
-    dataType: "json",
-
-    success: function (result) {
-      console.log("success :", result);
-    },
-  });
-});
-
-$("#createGroupAddEmailBtn").click(function () {
-  var email = $("#createGroupAddEmailInput").val();
-  var groupName = document.getElementById("createGroupNameInput").value;
-  console.log("hi, ", email, groupName);
-  var loginUserToken = localStorage.getItem("userauthtoken");
-
-  $.ajax({
-    type: "POST",
-    url: "/api/member/add",
-    data: {
-      email: email,
-    },
-    headers: {
-      Authorization: `Bearer ${loginUserToken}`,
-    },
-    dataType: "json",
-
-    success: function (result) {
-      if (result.code == 200) {
-        //var groupName = $("createGroupNameInput").val();
-        addGroupList.push(result.data.email);
-        createGroupObject = {
-          owner: currentUser.email,
-          group_name: groupName,
-          group_image_path: "",
-          member_list: addGroupList.join(", "),
-        };
-        console.log("createGroupObject : ", createGroupObject);
-      }
-    },
-  });
-});
 socket.on("receiveTest", function (data) {
   console.log("receiveTest!!", data);
   var className =
