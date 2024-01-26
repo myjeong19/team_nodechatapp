@@ -488,7 +488,35 @@ router.get('/profile', tokenAuthChecking, async (req, res, next) => {
 });
 
 
+// -------------------------------------채팅방 멤버 add api
+router.post('/add', tokenAuthChecking, async(req,res,next)=>{
+  const email = req.body.email;
 
+  try{
+    var email_en = await aes.encrypt(email, process.env.MYSQL_AES_KEY);
+    var member = await db.Member.findOne({
+      where:{email:email_en},
+      attributes:['member_id','email', 'name', 'profile_img_path']
+    });
+    if(!member){
+      console.error('member not found', err);
+      apiResult.code=400;
+      apiResult.data=null;
+      apiResult.result="Member not found";
+    }else{
+      apiResult.code=200;
+      apiResult.data=member;
+      apiResult.result="Sucess 멤버 데이터 전송";
+    }
+  } catch (err) {
+    console.error('Error in member POST /add:', err);
+    apiResult.code=500;
+    apiResult.data=null;
+    apiResult.result="Error in /api/member/add POST";
+  }
+
+  res.json(apiResult);
+});
 
 
 //아래의 에러처리 코드는 무조건 router정의가 다 끝난 최하단에 위치해야 함.
