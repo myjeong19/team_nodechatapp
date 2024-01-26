@@ -2016,10 +2016,21 @@
 
                 <div class="field-wrapper-group">
                   <div class="field-wrapper">
-                    <input type="email" placeholder="Enter Email ID" />
+                    <input
+                      type="email"
+                      placeholder="Enter Email ID"
+                      id="createGroupAddEmailInput"
+                      name="createGroupgroupAddEmailInput"
+                    />
                     <div class="field-placeholder">Add User</div>
                   </div>
-                  <button class="btn btn-secondary">Add</button>
+                  <button
+                    class="btn btn-secondary"
+                    id="createGroupAddEmailBtn"
+                    name="createGroupgroupAddEmailBtn"
+                  >
+                    Add
+                  </button>
                 </div>
 
                 <div class="stacked-users-group">
@@ -2241,142 +2252,6 @@
     <!-- Main Js Required -->
     <script src="js/main.js"></script>
 
-    <script>
-      const handleUserLoginCheck = () => {
-        const loginUserToken = localStorage.getItem('userauthtoken');
-
-        if (!loginUserToken) {
-          location.href = '/login.html';
-        }
-      };
-
-      $('document').ready(handleUserLoginCheck);
-
-      //파일업로드
-      $('#uploadProfile').change(function () {
-        var data = new FormData();
-
-        data.append(
-          'uploadProfile',
-          $('input[name=uploadProfile]')[0].files[0]
-        );
-
-        var fileName = $("#uploadProfile").val();
-
-        fileName = fileName.slice(fileName.indexOf(".") + 1).toLowerCase();
-
-        if (fileName != "jpg" && fileName != "png" && fileName != "gif" && fileName != "bmp") {
-
-            alert("이미지 파일은 (jpg, png, gif, bmp) 형식만 등록 가능합니다.");
-            $("#uploadProfile").val("");
-            return false;
-
-        }else{
-          
-          $.ajax({
-            data: data,
-            type: 'POST',
-            url: '/api/common/upload',
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function (result) {
-              console.log('파일업로드 처리결과: ', result);
-              if(result.code == 200){
-                $("#uploadImg").attr("src",result.data);
-                imgPath = result.data;
-                console.log(result.data);
-              }else if(result.code == 400){
-                console.log(result.resultMsg);
-              }else{
-                console.log("이미지 업로드 실패: ",result.resultMsg);
-              }
-            },
-            error: function (err) {
-                console.log("파일 업로드 에러 발생: ", err);
-            }
-          });
-
-        }
-      });
-
-        //웹브라우저 로컬스토리지에 저장된 사용자인증 JWT토큰정보 추출하기
-        var loginUserToken = localStorage.getItem('userauthtoken');
-
-        if (loginUserToken) {
-          $.ajax({
-            type: 'GET',
-            url: '/api/member/profile',
-            headers: {
-              Authorization: `Bearer ${loginUserToken}`,
-            },
-            dataType: 'json',
-            success: function (result) {
-              console.log('현재 사용자 정보 호출결과: ', result);
-
-              if (result.code == 200) {
-                $('#email').val(result.data.email);
-                $('#member_name').val(result.data.name);
-                $('#telephone').val(result.data.telephone);
-                $('#profile_img').attr('src', result.data.profile_img_path);
-              } else {
-                if (result.code == 400) {
-                  alert(result.code);
-                }
-              }
-            },
-            error: function (err) {
-              console.log('백엔드 API호출 에러발생:', err);
-            },
-          });
-        } else {
-          location.href = '/login.html';
-        }
-      });
-
-      $('#changePwdForm').click(function () {
-        var passwordChange = {
-          currentPW: $('#currentPW').val(),
-          newPW: $('#newPW').val(),
-          confirmPW: $('#confirmPW').val(),
-        };
-
-        if (passwordChange.currentPW == '') {
-          Swal.fire({ icon: 'error', title: 'Enter your current password' });
-          return false;
-        }
-        if (passwordChange.newPW == '') {
-          Swal.fire({ icon: 'error', title: 'Enter new password' });
-          return false;
-        }
-        if (passwordChange.confirmPW == '') {
-          Swal.fire({ icon: 'error', title: 'Enter confirm password' });
-          return false;
-        }
-        if (passwordChange.newPW != passwordChange.confirmPW) {
-          Swal.fire({ icon: 'error', title: 'Confirm Password not correct' });
-          return false;
-        }
-
-        $.ajax({
-          url: '/api/member/password/update',
-          type: 'POST',
-          headers: { Authorization: localStorage.getItem('userauthtoken') },
-          data: passwordChange,
-          success: function (result) {
-            console.log('비밀번호 변경 요청 결과: ', result);
-
-            if (result.code == 200) {
-              Swal.fire({ icon: 'success', title: result.resultMsg });
-            } else {
-              Swal.fire({ icon: 'error', title: result.resultMsg });
-            }
-          },
-        });
-        return false;
-      });
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
       body.swal2-height-auto {
@@ -2385,5 +2260,89 @@
         overflow-y: hidden !important;
       }
     </style>
+    <script
+      src="https://cdn.socket.io/4.4.1/socket.io.min.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
+  <script>
+    //JWT토큰 디코드 함수
+    function decodeJWT(token) {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+      return JSON.parse(jsonPayload);
+    }
+
+    //웹브라우저 로컬스토리지에 저장된 현재 로그인 사용자의 JWT토큰 조회하기
+    var jwtToken = localStorage.getItem("userauthtoken");
+
+    //JWT토큰내 로그인 사용자 JSON 정보조회
+    var currentUser = decodeJWT(jwtToken);
+
+    console.log("현재 사용자  정보 조회 :", currentUser);
+
+    var socket = io.connect("http://localhost:3001/");
+    var currentNickName = "eddy";
+    var currentChannel = "";
+  </script>
+  <script>
+    const handleUserLoginCheck = () => {
+      const loginUserToken = localStorage.getItem("userauthtoken");
+
+      if (!loginUserToken) {
+        location.href = "/login.html";
+      }
+    };
+
+    $("document").ready(handleUserLoginCheck);
+    $("#changePwdForm").click(function () {
+      var passwordChange = {
+        currentPW: $("#currentPW").val(),
+        newPW: $("#newPW").val(),
+        confirmPW: $("#confirmPW").val(),
+      };
+
+      if (passwordChange.currentPW == "") {
+        Swal.fire({ icon: "error", title: "Enter your current password" });
+        return false;
+      }
+      if (passwordChange.newPW == "") {
+        Swal.fire({ icon: "error", title: "Enter new password" });
+        return false;
+      }
+      if (passwordChange.confirmPW == "") {
+        Swal.fire({ icon: "error", title: "Enter confirm password" });
+        return false;
+      }
+      if (passwordChange.newPW != passwordChange.confirmPW) {
+        Swal.fire({ icon: "error", title: "Confirm Password not correct" });
+        return false;
+      }
+
+      $.ajax({
+        url: "/api/member/password/update",
+        type: "POST",
+        headers: { Authorization: localStorage.getItem("userauthtoken") },
+        data: passwordChange,
+        success: function (result) {
+          console.log("비밀번호 변경 요청 결과: ", result);
+
+          if (result.code == 200) {
+            Swal.fire({ icon: "success", title: result.resultMsg });
+          } else {
+            Swal.fire({ icon: "error", title: result.resultMsg });
+          }
+        },
+      });
+      return false;
+    });
+  </script>
+
+  <script src="/js/chat.js"></script>
 </html>
