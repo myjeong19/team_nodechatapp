@@ -2,9 +2,32 @@ var addGroupList = [];
 var addGroupList_de = [];
 var createGroupObject = {};
 
+let unstackUser = function (email, email_de) {
+  console.log("email unstack ", email_de, email);
+  let htmlId = email + "_o";
+  $("#" + htmlId).remove();
+
+  let indexToRemove = addGroupList.indexOf(email);
+  if (indexToRemove !== -1) {
+    addGroupList.splice(email, 1);
+  }
+  indexToRemove = addGroupList_de.indexOf(email_de);
+  if (indexToRemove !== -1) {
+    addGroupList_de.splice(email_de, 1);
+  }
+  createGroupObject.member_list = addGroupList.join(", ");
+  createGroupObject.member_list_de = addGroupList_de.join(", ");
+
+  console.log("createGroupObject : ", createGroupObject);
+};
+
 $("#createGroupBtn").click(function () {
   addGroupList = [];
   addGroupList_de = [];
+  var createGroupStackedUsers = document.getElementById(
+    "createGroupStackedUsers"
+  );
+  createGroupStackedUsers.innerHTML = "";
 });
 
 $("#createGroupBtnFinal").click(function () {
@@ -38,16 +61,21 @@ $("#createGroupBtnFinal").click(function () {
 });
 
 $("#createGroupAddEmailBtn").click(function () {
-  var email = $("#createGroupAddEmailInput").val();
-  var groupName = document.getElementById("createGroupNameInput").value;
-  console.log("hi, ", email, groupName);
+  var email = document.getElementById("createGroupAddEmailInput");
+
+  var groupName = document.getElementById("createGroupNameInput");
+  var createGroupStackedUsers = document.getElementById(
+    "createGroupStackedUsers"
+  );
+
+  console.log("hi, ", email.value, groupName.value);
   var loginUserToken = localStorage.getItem("userauthtoken");
 
   $.ajax({
     type: "POST",
     url: "/api/member/add",
     data: {
-      email: email,
+      email: email.value,
     },
     headers: {
       Authorization: `Bearer ${loginUserToken}`,
@@ -71,12 +99,32 @@ $("#createGroupAddEmailBtn").click(function () {
         console.log("addGroupList_de : ", addGroupList_de);
         createGroupObject = {
           owner: currentUser.email,
-          group_name: groupName,
+          group_name: groupName.value,
           group_image_path: "",
           member_list: addGroupList.join(", "),
           member_list_de: addGroupList_de.join(", "),
         };
         console.log("createGroupObject : ", createGroupObject);
+        var stackUserCircle = `<div class="stacked-user" id="${
+          result.data.email + "_o"
+        }" name="${result.data.email + "_o"}">
+        <img src="${result.data.profile_img_path}" alt="User" />
+        <span class="delete-user">
+          <img src="img/close.svg" alt="Remove User" id="${
+            result.data.email + "_x"
+          }" name="${result.data.email + "_x"}"/>
+        </span>
+      </div>`;
+
+        //createGroupStackedUsers.innerHTML += stackUserCircle;
+
+        $("#createGroupStackedUsers").append(stackUserCircle);
+        document
+          .getElementById(result.data.email + "_x")
+          .addEventListener("click", function () {
+            unstackUser(result.data.email, result.data.email_de);
+          });
+        email.value = "";
       } else if (result.code == 400) {
         console.log(result.result);
         alert(`error : ${result.result}`);

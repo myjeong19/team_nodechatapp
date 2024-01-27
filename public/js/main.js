@@ -35,9 +35,10 @@ if ($(window).width() < 768) {
 }
 
 // Delete User From Group Modal
-$(".stacked-user .delete-user").click(function () {
-  $(this).closest(".stacked-user").remove();
-});
+// $(".stacked-user .delete-user").click(function () {
+//   console.log("hihihi");
+//   $(this).closest(".stacked-user").remove();
+// });
 
 /***********
 ***********
