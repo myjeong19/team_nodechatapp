@@ -56,6 +56,10 @@ $("#createGroupBtnFinal").click(function () {
 
     success: function (result) {
       console.log("success :", result);
+      if (result.code == 200) {
+        console.log("소켓에서 그룹채팅방 만ㄷ르기");
+        socket.emit("createGroup", createGroupObject);
+      }
     },
   });
 });
@@ -70,6 +74,7 @@ $("#createGroupAddEmailBtn").click(function () {
 
   console.log("hi, ", email.value, groupName.value);
   var loginUserToken = localStorage.getItem("userauthtoken");
+  console.log(email.value, currentUser.email);
 
   $.ajax({
     type: "POST",
@@ -91,6 +96,12 @@ $("#createGroupAddEmailBtn").click(function () {
         var emailIncludes = addGroupList.includes(result.data.email);
         if (emailIncludes) {
           alert("이메일을 이미 추가했음");
+          email.value = "";
+          return false;
+        }
+        if (result.data.email == currentUser.email) {
+          alert("자기 자신은 추가하지 마세요.");
+          email.value = "";
           return false;
         }
         addGroupList.push(result.data.email);

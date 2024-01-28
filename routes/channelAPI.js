@@ -70,7 +70,73 @@ router.get("/all", async (req, res, next) => {
 
   res.json(apiResult);
 });
+router.get("/allChannel", async (req, res) => {
+  apiResult.code = 400;
+  apiResult.data = null;
+  apiResult.result = "";
 
+  try {
+    var channels = await db.Channel.findAll({
+      attributes: [
+        "channel_id",
+        "channel_name",
+        "channel_desc",
+        "reg_member_id",
+      ],
+
+      where: { channel_state_code: constants.CHANNEL_STATE_ACTIVE },
+    });
+
+    const channels_member_list_func = async (array) => {
+      const resultArray = await Promise.all(
+        channels.map(async (channel) => {
+          return await db.ChannelMember.findAll({
+            where: { channel_id: channel.channel_id },
+          });
+        })
+      );
+      return resultArray;
+    };
+    var channels_member_list = await channels_member_list_func();
+
+    const channels_member_img_list_func = async (array) => {
+      const path_array_list = await Promise.all(
+        channels_member_list.map(async (channel) => {
+          let path_array = async (array) => {
+            const resultArray = await Promise.all(
+              channel.map(async (member) => {
+                return await db.Member.findOne({
+                  where: { member_id: member.member_id },
+                  attributes: ["name", "profile_img_path"],
+                });
+              })
+            );
+            return resultArray;
+          };
+          return await path_array();
+        })
+      );
+      return path_array_list;
+    };
+    var img_list = await channels_member_img_list_func();
+    //console.log("img_list : ", JSON.stringify(img_list, null, 2));
+
+    for (let i = 0; i < img_list.length; i++) {
+      channels[i].dataValues.img_paths = img_list[i];
+    }
+    //console.log("channels : ", channels);
+    apiResult.code = 200;
+    apiResult.data = channels;
+    apiResult.result = "Ok";
+  } catch (err) {
+    apiResult.code = 500;
+    apiResult.data = null;
+    apiResult.result = "Failed";
+    console.log(err);
+  }
+
+  res.json(apiResult);
+});
 //channel create api
 //일대일 채팅방은 기존 코드값대로 socket.js에서 생성/entry하고
 //그룹 채팅방만 /api/channel/create 쪽에서 생성처리합니다.
@@ -93,8 +159,8 @@ router.post("/create", async (req, res, next) => {
     var member_list = req.body.member_list;
 
     var token = req.headers.authorization.split("Bearer")[1].trim();
-    var tokenData = await jwt.verify(token, process.env.JWT_SECRET);
 
+    var tokenData = await jwt.verify(token, process.env.JWT_SECRET);
     //var regMember = await jwt.verify(req.body.owner, process.env.JWT_SECRET);
     var regMember = tokenData;
     //채널 생성

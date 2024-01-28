@@ -117,6 +117,80 @@ $("#contacts-tab").click(function () {
   });
 });
 
+$("#groups-tab").click(function () {
+  var loginUserToken = localStorage.getItem("userauthtoken");
+
+  $.ajax({
+    type: "GET",
+    url: "/api/channel/allChannel",
+    headers: {
+      Authorization: `Bearer ${loginUserToken}`,
+    },
+    dataType: "json",
+
+    success: function (result) {
+      console.log("백엔드호출 API 호출 결과 : ", result);
+      if (result.code == 200) {
+        $(".group-chat-cards").html("");
+
+        var cards = result.data.map((channel) => {
+          var images = channel.img_paths
+            .map((path) => {
+              var htmlTag = `<img src=${path.profile_img_path.toString()} alt="Group Image" />`;
+              return htmlTag;
+            })
+            .join(" ");
+
+          var card = `<li>
+          <a href="#">
+          <div class="group-avatar">
+            <img src="img/group4.svg" alt="Group Image" />
+          </div>
+          <h5 class="text-truncate">${channel.channel_name}</h5>
+          <div class="stacked-images">
+          ${images}
+            <span class="plus">+5</span>
+          </div>
+          <div class="group-chat-actions">
+            <button
+              class="edit-group"
+              data-toggle="modal"
+              data-target="#editGroup"
+            >
+              <img src="img/edit.svg" alt="Edit Group" />
+            </button>
+            <button class="delete-group">
+              <img src="img/delete.svg" alt="Delete Group" />
+            </button>
+          </div>
+        </a>
+      </li>`;
+          console.log("card : ", card);
+          return card;
+        });
+
+        $(".group-chat-cards").append(cards.toString());
+        // var data = {
+        //   memberId: currentUser.member_id,
+        //   name: currentUser.name,
+        //   //channelType: constants.CHANNEL_TYPE_ONE_VS_ONE,
+        //   channelType: 1,
+        // };
+        // $.each(result.data, function (index, user) {
+        //   $(".contacts-list").append(userTag);
+        // });
+      } else {
+        if (result.code == 400) {
+          alert(result.code);
+        }
+      }
+    },
+    error: function (err) {
+      console.log("백엔드호출 API 호출 에러 발생 : ", err);
+    },
+  });
+});
+
 $("#btnSend").click(function () {
   var channelId = currentChannel.channel_id;
   var memberId = currentUser.member_id;
